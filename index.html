@@ -13,7 +13,6 @@
             margin: 0;
             padding: 0;
             height: 100%;
-            overflow: hidden;
         }
         body { 
             font-family: 'Inter', sans-serif; 
@@ -104,7 +103,7 @@
 
     <div class="h-screen flex flex-col">
         <!-- Header -->
-        <header class="text-white shadow-md z-40 flex-shrink-0" style="background: linear-gradient(90deg, rgba(42, 123, 155, 1) 0%, rgb(37, 201, 162) 50%, rgb(10, 182, 206) 100%);">
+        <header class="text-white shadow-md z-40 flex-shrink-0" style="background: linear-gradient(90deg, rgba(32, 103, 135, 1) 0%, rgb(27, 181, 142) 50%, rgb(0, 162, 186) 100%);">
             <div class="flex items-center justify-between h-[50px] px-4">
                 <h1 class="text-xl font-bold">APG Hackathon - DEMO</h1>
                 <div class="relative">
@@ -124,7 +123,7 @@
                 </div>
             </header>
         
-        <div class="flex flex-grow overflow-hidden">
+        <div class="flex flex-grow relative">
             <!-- Left Side Menu -->
             <aside id="leftMenu" class="w-16 bg-gray-200 text-gray-600 flex flex-col items-center py-4 space-y-2 flex-shrink-0 border-r border-gray-300">
                 <div class="has-tooltip relative">
@@ -155,7 +154,7 @@
 
             <div id="appContainer" class="flex-grow flex flex-col">
                 <!-- Main Screen Content -->
-                <main id="mainScreen" class="flex-grow main-screen-fade opacity-100 bg-gray-100">
+                <main id="mainScreen" class="flex-grow main-screen-fade opacity-100 bg-gray-100 overflow-y-auto">
                     <div id="home" class="page-view p-8">
                         <div class="bg-white p-8 rounded-lg shadow-xl">
                             <h2 class="text-3xl font-semibold mb-6 text-gray-700">Dashboard</h2>
@@ -163,21 +162,21 @@
                             <section class="mb-8">
                                 <h3 class="text-xl font-semibold text-gray-800 mb-4">Employee Overview</h3>
                                 <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
-                                    <div class="bg-blue-100 p-4 rounded-lg shadow text-center">
-                                        <p class="text-sm text-blue-800 font-semibold">Total Employees</p>
-                                        <p id="totalEmployees" class="text-3xl font-bold text-blue-900">0</p>
+                                    <div class="p-4 rounded-lg shadow text-center bg-gray-200">
+                                        <p class="text-sm font-semibold text-gray-800">Total Employees</p>
+                                        <p id="totalEmployees" class="text-3xl font-bold text-gray-900">0</p>
                                     </div>
-                                    <div class="bg-pink-100 p-4 rounded-lg shadow text-center">
-                                        <p class="text-sm text-pink-800 font-semibold">Ladies</p>
-                                        <p id="ladiesCount" class="text-3xl font-bold text-pink-900">0</p>
+                                    <div class="p-4 rounded-lg shadow text-center bg-gray-200">
+                                        <p class="text-sm font-semibold text-gray-800">Ladies</p>
+                                        <p id="ladiesCount" class="text-3xl font-bold text-gray-900">0</p>
                                     </div>
-                                    <div class="bg-indigo-100 p-4 rounded-lg shadow text-center">
-                                        <p class="text-sm text-indigo-800 font-semibold">Gents</p>
-                                        <p id="gentsCount" class="text-3xl font-bold text-indigo-900">0</p>
+                                    <div class="p-4 rounded-lg shadow text-center bg-gray-200">
+                                        <p class="text-sm font-semibold text-gray-800">Gents</p>
+                                        <p id="gentsCount" class="text-3xl font-bold text-gray-900">0</p>
                                     </div>
-                                    <div class="bg-green-100 p-4 rounded-lg shadow text-center">
-                                        <p class="text-sm text-green-800 font-semibold">Avg. Experience</p>
-                                        <p class="text-3xl font-bold text-green-900">4.2 yrs</p>
+                                    <div class="p-4 rounded-lg shadow text-center bg-gray-200">
+                                        <p class="text-sm font-semibold text-gray-800">Avg. Experience</p>
+                                        <p class="text-3xl font-bold text-gray-900">4.2 yrs</p>
                                     </div>
                                 </div>
                             </section>
@@ -186,20 +185,20 @@
                         <section>
                             <h3 class="text-xl font-semibold text-gray-800 mb-4">Sales Dashboard</h3>
                             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-                                 <div class="bg-gray-100 p-4 rounded-lg shadow text-center">
-                                    <p class="text-sm text-gray-600 font-semibold">Total Sales</p>
+                                 <div class="p-4 rounded-lg shadow text-center bg-gray-200">
+                                    <p class="text-sm font-semibold text-gray-800">Total Sales</p>
                                     <p id="totalSales" class="text-2xl font-bold text-gray-900">$0</p>
                                 </div>
-                                 <div class="bg-gray-100 p-4 rounded-lg shadow text-center">
-                                    <p class="text-sm text-gray-600 font-semibold">Income</p>
+                                 <div class="p-4 rounded-lg shadow text-center bg-gray-200">
+                                    <p class="text-sm font-semibold text-gray-800">Income</p>
                                     <p id="income" class="text-2xl font-bold text-gray-900">$0</p>
                                 </div>
-                                 <div class="bg-gray-100 p-4 rounded-lg shadow text-center">
-                                    <p class="text-sm text-gray-600 font-semibold">Profit Margin</p>
+                                 <div class="p-4 rounded-lg shadow text-center bg-gray-200">
+                                    <p class="text-sm font-semibold text-gray-800">Profit Margin</p>
                                     <p id="profitMargin" class="text-2xl font-bold text-gray-900">0%</p>
                                 </div>
-                                 <div class="bg-gray-100 p-4 rounded-lg shadow text-center">
-                                    <p class="text-sm text-gray-600 font-semibold">EBITDA</p>
+                                 <div class="p-4 rounded-lg shadow text-center bg-gray-200">
+                                    <p class="text-sm font-semibold text-gray-800">EBITDA</p>
                                     <p id="ebidta" class="text-2xl font-bold text-gray-900">$0</p>
                                 </div>
                             </div>
@@ -306,8 +305,8 @@
                 </div>
 
             </main>
-            <footer class="bg-gray-700 text-gray-300 p-2 text-center text-xs flex-shrink-0">
-                <p><strong>Team:</strong> Team Columbus</p>
+            <footer class="bg-gray-200 text-gray-800 p-2 text-center text-xs flex-shrink-0 border-t border-gray-300">
+                <p><strong>Team:</strong> Columbus</p>
                 <p><strong>Developers:</strong> Eldose Chacko &amp; Abdul Ahad</p>
             </footer>
         </div>
