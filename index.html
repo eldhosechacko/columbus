@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>APG Hackathon - DEMO</title>
+    <title>GuideSpark - Workflow Builder</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -105,7 +105,7 @@
         <!-- Header -->
         <header class="text-white shadow-md z-40 flex-shrink-0" style="background: linear-gradient(90deg, rgba(32, 103, 135, 1) 0%, rgb(27, 181, 142) 50%, rgb(0, 162, 186) 100%);">
             <div class="flex items-center justify-between h-[50px] px-4">
-                <h1 class="text-xl font-bold">APG Hackathon - DEMO</h1>
+                <h1 class="text-xl font-bold">GuideSpark</h1>
                 <div class="relative">
                     <button id="workflowDropdownButton" class="flex items-center space-x-2 px-3 py-1.5 bg-white/20 hover:bg-white/30 rounded-md transition text-white">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
@@ -115,6 +115,7 @@
                     <div id="workflowDropdownPanel" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 py-1 z-50">
                         <a href="#" id="createNewWorkflow" class="dropdown-item font-semibold text-gray-800">Create New Workflow</a>
                         <a href="#" id="createWithAI" class="dropdown-item font-semibold text-gray-800">✨ Create with AI</a>
+                        <a href="#" id="aboutTool" class="dropdown-item">About GuideSpark</a>
                         <hr class="my-1"/>
                         <div id="availableWorkflowsList" class="max-h-60 overflow-y-auto">
                            <div class="px-4 py-2 text-sm text-gray-500">Loading...</div>
@@ -318,12 +319,39 @@
     <div id="aiCreatePopup" class="fixed bottom-6 right-6 bg-white p-6 rounded-lg shadow-2xl w-full max-w-md popup-fade popup-hidden z-50 border-2 border-green-500"><h3 class="text-xl font-semibold mb-2 text-gray-700">✨ Create Workflow with AI</h3><p class="text-sm text-gray-500 mb-3">Describe the workflow you want to create.</p><textarea id="aiWorkflowInput" placeholder="e.g., Show me how to add a new employee" class="w-full p-3 border rounded-md mb-4 h-24 focus:ring-2 focus:ring-green-500"></textarea><div class="flex justify-end items-center"><div class="space-x-3"><button id="cancelAICreateButton" class="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300">Cancel</button><button id="generateAIWorkflowButton" class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 flex items-center justify-center">Generate</button></div></div></div>
     <div id="runStepPopup" class="fixed bg-white p-6 rounded-lg shadow-2xl w-full max-w-sm popup-fade popup-hidden z-50 border-2 border-purple-500">
         <div id="popupArrow" class="popup-arrow"></div>
-        <h3 class="text-xl font-semibold mb-2 text-gray-700">Workflow Step</h3>
+        <div class="flex justify-between items-start mb-2">
+            <h3 class="text-xl font-semibold text-gray-700">Workflow Step</h3>
+            <button id="endWorkflowRunButton" class="p-1 text-gray-400 hover:text-gray-600">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+        </div>
         <div id="runStepInfo" class="text-sm text-gray-500 mb-3">Step X of Y</div>
         <div id="runStepHelpText" class="bg-gray-100 p-4 rounded-md mb-4 min-h-[60px]">Help text...</div>
-        <div class="flex justify-end space-x-3">
-            <button id="endWorkflowRunButton" class="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600">End Workflow</button>
-            <button id="nextStepButton" class="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700">Next Step</button>
+        <div class="flex justify-between items-center">
+            <div class="relative">
+                <button id="moreOptionsButton" class="p-2 rounded-full hover:bg-gray-200">
+                    <svg class="w-6 h-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m4 4L8 17M13 17l-5-5m5 5a2.5 2.5 0 110-5 2.5 2.5 0 010 5z" />
+                    </svg>
+                </button>
+                <div id="moreOptionsPanel" class="hidden absolute bottom-full mb-2 w-48 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 py-1 z-50">
+                    <div class="px-4 py-2 text-xs text-gray-400">Translate</div>
+                    <a href="#" class="dropdown-item" data-lang="es">Español</a>
+                    <a href="#" class="dropdown-item" data-lang="fr">Français</a>
+                    <a href="#" class="dropdown-item" data-lang="de">Deutsch</a>
+                    <a href="#" class="dropdown-item" data-lang="hi">हिन्दी</a>
+                    <a href="#" class="dropdown-item" data-lang="ta">தமிழ்</a>
+                    <a href="#" class="dropdown-item" data-lang="ml">മലയാളം</a>
+                    <div id="showOriginalContainer" class="hidden">
+                         <hr class="my-1"/>
+                         <a href="#" id="showOriginalHelpButton" class="dropdown-item">Show Original</a>
+                    </div>
+                </div>
+            </div>
+            <div class="flex justify-end space-x-2">
+                 <button id="previousStepButton" class="px-3 py-1.5 text-sm bg-gray-400 text-white rounded-md hover:bg-gray-500">Previous</button>
+                <button id="nextStepButton" class="px-3 py-1.5 text-sm bg-purple-600 text-white rounded-md hover:bg-purple-700">Next</button>
+            </div>
         </div>
     </div>
     <div id="nextStepChoicePopup" class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-6 rounded-lg shadow-2xl w-full max-w-md popup-fade popup-hidden z-50 border-2 border-indigo-500">
@@ -335,11 +363,37 @@
         </div>
     </div>
     <div id="customModalOverlay" class="custom-modal-overlay"><div class="custom-modal"><h3 id="customModalTitle"></h3><p id="customModalMessage"></p><div class="flex justify-end space-x-2 mt-4"><button id="customModalCancelButton" class="cancel-button">Cancel</button><button id="customModalConfirmButton" class="confirm-button">OK</button></div></div></div>
+    <div id="aboutModal" class="custom-modal-overlay hidden">
+        <div class="custom-modal" style="text-align: left; width: 60%; max-width: 800px;">
+            <div class="flex justify-between items-center mb-4">
+                <h3 id="aboutModalTitle" class="text-xl font-bold">About GuideSpark</h3>
+                <button id="closeAboutModal" class="text-gray-500 hover:text-gray-800 text-2xl font-bold">&times;</button>
+            </div>
+            <div id="aboutModalContent" class="text-sm">
+                <p class="mb-4"><strong>GuideSpark</strong> is an intuitive, AI-powered workflow builder designed to simplify complex processes and create interactive, step-by-step tutorials and guides directly on your web application.</p>
+                <h4 class="font-semibold mb-2">Key Features:</h4>
+                <ul class="list-disc list-inside mb-4 space-y-1">
+                    <li><strong>No-Code Workflow Creation:</strong> Simply click on elements to build your guide. No programming knowledge required.</li>
+                    <li><strong>AI-Powered Suggestions:</strong> Get intelligent help text suggestions from Gemini to make your instructions clear and effective.</li>
+                    <li><strong>Interactive Guidance:</strong> Run workflows that highlight elements and provide clear, contextual instructions to users in real-time.</li>
+                    <li><strong>Multiple Export Options:</strong> Export your workflows as JSON for easy sharing and backup, or as a professional PDF document for offline use.</li>
+                    <li><strong>Dynamic Page Navigation:</strong> Create workflows that span across different pages and views of your application seamlessly.</li>
+                </ul>
+                 <h4 class="font-semibold mb-2">Advantages:</h4>
+                <ul class="list-disc list-inside">
+                    <li>Drastically reduce user training time and support tickets.</li>
+                    <li>Improve user onboarding and feature adoption.</li>
+                    <li>Standardize processes and ensure tasks are completed correctly.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
     
     <script type="module">
         document.addEventListener('DOMContentLoaded', () => { 
             let currentWorkflowId = null, currentWorkflowName = '', currentStepNumber = 1, isElementSelectionMode = false, highlightedElementForSelection = null;
             let runningWorkflowData = null, currentRunningStepIndex = 0, highlightedElementForRunning = null;
+            let originalHelpText = '';
 
             const WORKFLOW_STORAGE_KEY = 'workflowBuilderApp_workflows';
             const USER_STORAGE_KEY = 'workflowBuilderApp_users';
@@ -355,6 +409,9 @@
             const createNewWorkflowLink = document.getElementById('createNewWorkflow');
             const createWithAI = document.getElementById('createWithAI');
             const availableWorkflowsListDiv = document.getElementById('availableWorkflowsList');
+            const aboutToolLink = document.getElementById('aboutTool');
+            const aboutModal = document.getElementById('aboutModal');
+            const closeAboutModalButton = document.getElementById('closeAboutModal');
             
             // Popups
             const workflowNamePopup = document.getElementById('workflowNamePopup');
@@ -372,7 +429,12 @@
             const runStepHelpText = document.getElementById('runStepHelpText');
             const runStepInfo = document.getElementById('runStepInfo');
             const nextStepButton = document.getElementById('nextStepButton');
+            const previousStepButton = document.getElementById('previousStepButton');
             const endWorkflowRunButton = document.getElementById('endWorkflowRunButton');
+            const moreOptionsButton = document.getElementById('moreOptionsButton');
+            const moreOptionsPanel = document.getElementById('moreOptionsPanel');
+            const showOriginalHelpButton = document.getElementById('showOriginalHelpButton');
+            const showOriginalContainer = document.getElementById('showOriginalContainer');
             
             const nextStepChoicePopup = document.getElementById('nextStepChoicePopup');
             const finishFromChoiceButton = document.getElementById('finishFromChoiceButton');
@@ -394,7 +456,7 @@
             const customModalOverlay = document.getElementById('customModalOverlay');
             const customModalTitle = document.getElementById('customModalTitle');
             const customModalMessage = document.getElementById('customModalMessage');
-
+            
             // --- LocalStorage Helper Functions ---
             function getWorkflowsFromStorage() { const json = localStorage.getItem(WORKFLOW_STORAGE_KEY); return json ? JSON.parse(json) : []; }
             function saveWorkflowsToStorage(workflows) { localStorage.setItem(WORKFLOW_STORAGE_KEY, JSON.stringify(workflows)); }
@@ -402,16 +464,27 @@
             function saveUsersToStorage(users) { localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(users)); }
 
             // --- Custom Modal Function ---
-            function showCustomAlert(title, message, showCancel = false) {
-                customModalTitle.textContent = title;
-                customModalMessage.textContent = message;
-                document.getElementById('customModalConfirmButton').textContent = 'OK';
-                document.getElementById('customModalCancelButton').style.display = showCancel ? 'inline-block' : 'none';
+            function showCustomAlert(title, message, isConfirm = false) {
+                const customModal = document.querySelector('#customModalOverlay .custom-modal');
+                const titleEl = customModal.querySelector('h3');
+                const msgEl = customModal.querySelector('p');
+                const buttonsDiv = customModal.querySelector('.flex.justify-end');
+                
+                titleEl.textContent = title;
+                msgEl.textContent = message;
+
+                if (isConfirm) {
+                    buttonsDiv.style.display = 'flex';
+                } else {
+                    buttonsDiv.style.display = 'flex';
+                    customModal.querySelector('.cancel-button').style.display = 'none';
+                }
+                
                 customModalOverlay.classList.add('active');
 
                 return new Promise((resolve) => {
-                    document.getElementById('customModalConfirmButton').onclick = () => { customModalOverlay.classList.remove('active'); resolve(true); };
-                    if (showCancel) { document.getElementById('customModalCancelButton').onclick = () => { customModalOverlay.classList.remove('active'); resolve(false); }; }
+                    customModal.querySelector('.confirm-button').onclick = () => { customModalOverlay.classList.remove('active'); resolve(true); };
+                    customModal.querySelector('.cancel-button').onclick = () => { customModalOverlay.classList.remove('active'); resolve(false); };
                 });
             }
             
@@ -464,8 +537,23 @@
 
 
             async function showRunStepPopup(stepText, currentStep, totalSteps, highlightedElement) {
+                originalHelpText = stepText;
                 runStepHelpText.textContent = stepText;
                 runStepInfo.textContent = `Step ${currentStep} of ${totalSteps}`;
+                showOriginalContainer.classList.add('hidden');
+                moreOptionsButton.classList.remove('ring-2', 'ring-green-500');
+                
+                if (currentStep === 1) {
+                    previousStepButton.classList.add('hidden');
+                } else {
+                    previousStepButton.classList.remove('hidden');
+                }
+                
+                if(currentStep === totalSteps) {
+                    nextStepButton.textContent = "Finish";
+                } else {
+                    nextStepButton.textContent = "Next";
+                }
 
                 const popup = runStepPopup;
                 popup.style.opacity = '0';
@@ -487,15 +575,13 @@
 
                 if (highlightedElement) {
                     const elRect = highlightedElement.getBoundingClientRect();
-                    const viewportWidth = window.innerWidth;
-                    const viewportHeight = window.innerHeight;
                     const margin = 15;
 
                     let finalTop, finalLeft;
                     let arrowDirection = '';
 
                     // Try right
-                    if (elRect.right + margin + popupWidth < viewportWidth) {
+                    if (elRect.right + margin + popupWidth < window.innerWidth) {
                         arrowDirection = 'left';
                         finalLeft = elRect.right + margin;
                         finalTop = elRect.top + elRect.height / 2 - popupHeight / 2;
@@ -507,7 +593,7 @@
                         finalTop = elRect.top + elRect.height / 2 - popupHeight / 2;
                     }
                     // Else, try below
-                    else if (elRect.bottom + margin + popupHeight < viewportHeight) {
+                    else if (elRect.bottom + margin + popupHeight < window.innerHeight) {
                         arrowDirection = 'up';
                         finalTop = elRect.bottom + margin;
                         finalLeft = elRect.left + elRect.width / 2 - popupWidth / 2;
@@ -522,11 +608,11 @@
                     else {
                         arrowDirection = '';
                         finalTop = margin;
-                        finalLeft = (viewportWidth - popupWidth) / 2;
+                        finalLeft = (window.innerWidth - popupWidth) / 2;
                     }
                     
-                    finalTop = Math.max(margin, Math.min(finalTop, viewportHeight - popupHeight - margin));
-                    finalLeft = Math.max(margin, Math.min(finalLeft, viewportWidth - popupWidth - margin));
+                    finalTop = Math.max(margin, Math.min(finalTop, window.innerHeight - popupHeight - margin));
+                    finalLeft = Math.max(margin, Math.min(finalLeft, window.innerWidth - popupWidth - margin));
 
                     popup.style.top = `${finalTop}px`;
                     popup.style.left = `${finalLeft}px`;
@@ -714,7 +800,7 @@
             function handleElementMouseOver(event) {
                 if (!isElementSelectionMode) return;
                 
-                const ignoredElementsOrParents = ['.popup-fade', '#customModalOverlay', 'header', '#workflowDropdownButton', '#workflowDropdownPanel'];
+                const ignoredElementsOrParents = ['.popup-fade', '#customModalOverlay', '#aboutModal', 'header', '#workflowDropdownButton', '#workflowDropdownPanel'];
                 if (ignoredElementsOrParents.some(selector => event.target.closest(selector))) {
                     if (highlightedElementForSelection) {
                         highlightedElementForSelection.classList.remove('element-hover-outline');
@@ -740,7 +826,7 @@
             async function handleElementClick(event) {
                 if (!isElementSelectionMode) return;
 
-                const ignoredElementsOrParents = ['.popup-fade', '#customModalOverlay', 'header', '#workflowDropdownButton', '#workflowDropdownPanel'];
+                const ignoredElementsOrParents = ['.popup-fade', '#customModalOverlay', '#aboutModal', 'header', '#workflowDropdownButton', '#workflowDropdownPanel'];
                 if (ignoredElementsOrParents.some(selector => event.target.closest(selector))) {
                     return;
                 }
@@ -852,7 +938,7 @@
                     showCustomAlert("Error", "Could not find workflow to export.");
                     return;
                 }
-                await showCustomAlert("Generating PDF", "Please wait while the PDF is being generated. This may take a moment.", false);
+                await showCustomAlert("Generating PDF", "Please wait while the PDF is being generated. This may take a moment.");
 
                 const doc = new jsPDF();
                 const sortedSteps = workflow.steps.sort((a,b) => a.stepNumber - b.stepNumber);
@@ -874,7 +960,7 @@
                         targetElement.classList.add('element-running-highlight');
                     }
                     
-                    const runStepButtons = runStepPopup.querySelector('.flex.justify-end');
+                    const runStepButtons = runStepPopup.querySelector('.flex.justify-between.items-center');
                     if(runStepButtons) runStepButtons.style.display = 'none';
 
                     await showRunStepPopup(step.helpText, step.stepNumber, sortedSteps.length, targetElement);
@@ -1007,18 +1093,30 @@
                         targetElement.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' }); 
                         highlightedElementForRunning = targetElement;
                         highlightedElementForRunning.classList.add('element-running-highlight');
-                        await showRunStepPopup(step.helpText, step.stepNumber, runningWorkflowData.steps.length, targetElement);
+                        await showRunStepPopup(step.helpText, currentRunningStepIndex + 1, runningWorkflowData.steps.length, targetElement);
                     }, 100);
 
                 } else {
-                    await showRunStepPopup(step.helpText + "\n\n(Warning: Element not found on page)", step.stepNumber, runningWorkflowData.steps.length, null);
+                    await showRunStepPopup(step.helpText, currentRunningStepIndex + 1, runningWorkflowData.steps.length, null);
+                }
+            }
+            
+            async function handlePreviousStep() {
+                if (currentRunningStepIndex > 0) {
+                    await hideRunStepPopup();
+                    currentRunningStepIndex--;
+                    executeCurrentStep();
                 }
             }
 
             async function handleNextStep() {
-                await hideRunStepPopup();
-                currentRunningStepIndex++; 
-                executeCurrentStep();
+                if (currentRunningStepIndex < runningWorkflowData.steps.length - 1) {
+                    await hideRunStepPopup();
+                    currentRunningStepIndex++; 
+                    executeCurrentStep();
+                } else {
+                    await endWorkflowRun(true);
+                }
             }
             
             async function endWorkflowRun(completed = false) {
@@ -1029,8 +1127,46 @@
                 await hideRunStepPopup();
                 const workflowName = runningWorkflowData ? runningWorkflowData.name : "Workflow";
                 runningWorkflowData = null; currentRunningStepIndex = 0;
-                await showCustomAlert(completed ? "Workflow Complete" : "Workflow Ended", `"${workflowName}" has ${completed ? 'finished' : 'stopped'}.`);
+                await showCustomAlert(completed ? "Workflow Complete" : "Workflow Ended");
             }
+            
+            // --- Translation ---
+            async function translateHelpText(text, targetLanguage) {
+                moreOptionsButton.innerHTML = `<svg class="animate-spin h-5 w-5 text-gray-600" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>`;
+
+                const prompt = `Translate the following English text to ${targetLanguage}. Respond with only the translated text and nothing else: "${text}"`;
+                try {
+                    let chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
+                    const payload = { contents: chatHistory };
+                    const apiKey = ""; // Leave empty for Canvas provided key
+                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+                    
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    
+                    if (!response.ok) throw new Error(`API Error: ${response.statusText}`);
+                    
+                    const result = await response.json();
+
+                    if (result.candidates && result.candidates[0]?.content?.parts[0]?.text) {
+                        runStepHelpText.textContent = result.candidates[0].content.parts[0].text.replace(/\"/g, "").trim();
+                        showOriginalContainer.classList.remove('hidden');
+                        moreOptionsButton.classList.add('ring-2', 'ring-green-500');
+                    } else {
+                        throw new Error("Unexpected API response format.");
+                    }
+                } catch (error) {
+                    console.error("Translation API Error:", error);
+                    showCustomAlert("Translation Error", "Could not translate the text at this time.");
+                } finally {
+                     moreOptionsButton.innerHTML = `<svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m4 4L8 17M13 17l-5-5m5 5a2.5 2.5 0 110-5 2.5 2.5 0 010 5z" /></svg>`;
+                    moreOptionsPanel.classList.add('hidden');
+                }
+            }
+
 
             // --- Gemini API Integration ---
             async function getHelpTextSuggestion(elementPath) {
@@ -1085,8 +1221,33 @@
             }
 
             // --- Event Listeners ---
+            aboutToolLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                aboutModal.classList.remove('hidden', 'popup-hidden');
+                aboutModal.classList.add('active');
+            });
+
+            closeAboutModalButton.addEventListener('click', () => {
+                aboutModal.classList.add('hidden');
+                aboutModal.classList.remove('active');
+            });
+
+            aboutModal.addEventListener('click', (e) => {
+                if (e.target === aboutModal) {
+                    aboutModal.classList.add('hidden');
+                    aboutModal.classList.remove('active');
+                }
+            });
+
             workflowDropdownButton.addEventListener('click', (e) => { e.stopPropagation(); workflowDropdownPanel.classList.toggle('hidden'); });
-            window.addEventListener('click', () => { if (!workflowDropdownPanel.classList.contains('hidden')) workflowDropdownPanel.classList.add('hidden'); });
+            window.addEventListener('click', () => { 
+                if (!workflowDropdownPanel.classList.contains('hidden')) {
+                    workflowDropdownPanel.classList.add('hidden');
+                }
+                if (!moreOptionsPanel.classList.contains('hidden')) {
+                    moreOptionsPanel.classList.add('hidden');
+                }
+            });
             createNewWorkflowLink.addEventListener('click', (e) => { e.preventDefault(); workflowDropdownPanel.classList.add('hidden'); if (runningWorkflowData || currentWorkflowId) { showCustomAlert("Workflow Active", "Please finish current activity first."); return; } showWorkflowNamePopup(); });
             saveWorkflowNameButton.addEventListener('click', saveWorkflowName);
             cancelWorkflowNameButton.addEventListener('click', cancelWorkflowCreation);
@@ -1099,8 +1260,29 @@
             addAnotherStepButton.addEventListener('click', () => { hideNextStepChoicePopup().then(() => enableElementSelectionMode()); });
             finishFromChoiceButton.addEventListener('click', () => { hideNextStepChoicePopup().then(() => finishWorkflow()); });
             nextStepButton.addEventListener('click', handleNextStep);
+            previousStepButton.addEventListener('click', handlePreviousStep);
             endWorkflowRunButton.addEventListener('click', () => endWorkflowRun(false));
             
+            moreOptionsButton.addEventListener('click', (e) => {
+                e.stopPropagation();
+                moreOptionsPanel.classList.toggle('hidden');
+            });
+
+            moreOptionsPanel.addEventListener('click', (e) => {
+                if (e.target.tagName === 'A' && e.target.dataset.lang) {
+                    const lang = e.target.dataset.lang;
+                    translateHelpText(originalHelpText, lang);
+                }
+            });
+
+            showOriginalHelpButton.addEventListener('click', (e) => {
+                e.preventDefault();
+                runStepHelpText.textContent = originalHelpText;
+                showOriginalContainer.classList.add('hidden');
+                moreOptionsPanel.classList.add('hidden');
+                moreOptionsButton.classList.remove('ring-2', 'ring-green-500');
+            });
+
             menuItems.forEach(item => {
                 item.addEventListener('click', (e) => {
                     e.preventDefault();
@@ -1129,7 +1311,7 @@
             
             showPage('home');
             fetchAndDisplayWorkflows(); 
-            ['workflowNamePopup', 'helpTextPopup', 'runStepPopup', 'nextStepChoicePopup', 'aiCreatePopup'].forEach(id => {
+            ['workflowNamePopup', 'helpTextPopup', 'runStepPopup', 'nextStepChoicePopup', 'aiCreatePopup', 'aboutModal'].forEach(id => {
                 const el = document.getElementById(id);
                 if(el) el.classList.add('popup-hidden');
             });
