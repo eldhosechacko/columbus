@@ -109,12 +109,11 @@
                 <div class="relative">
                     <button id="workflowDropdownButton" class="flex items-center space-x-2 px-3 py-1.5 bg-white/20 hover:bg-white/30 rounded-md transition text-white">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
-                        <span>Workflows</span>
+                        <span>Guide Spark</span>
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                     </button>
                     <div id="workflowDropdownPanel" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 py-1 z-50">
                         <a href="#" id="createNewWorkflow" class="dropdown-item font-semibold text-gray-800">Create New Workflow</a>
-                        <a href="#" id="createWithAI" class="dropdown-item font-semibold text-gray-800">✨ Create with AI</a>
                         <a href="#" id="aboutTool" class="dropdown-item">About GuideSpark</a>
                         <hr class="my-1"/>
                         <div id="availableWorkflowsList" class="max-h-60 overflow-y-auto">
@@ -318,7 +317,6 @@
     <!-- POPUPS -->
     <div id="workflowNamePopup" class="fixed bottom-6 right-6 bg-white p-6 rounded-lg shadow-2xl w-full max-w-md popup-fade popup-hidden z-50 border-2 border-blue-500"><h3 class="text-xl font-semibold mb-4 text-gray-700">Create New Workflow</h3><input type="text" id="workflowNameInput" placeholder="Enter Workflow Name" class="w-full p-3 border rounded-md mb-4 focus:ring-2 focus:ring-blue-500"><div class="flex justify-end space-x-3"><button id="cancelWorkflowNameButton" class="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300">Cancel</button><button id="saveWorkflowNameButton" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">Save & Start</button></div></div>
     <div id="helpTextPopup" class="fixed bottom-6 right-6 bg-white p-6 rounded-lg shadow-2xl w-full max-w-md popup-fade popup-hidden z-50 border-2 border-green-500"><h3 class="text-xl font-semibold mb-2 text-gray-700">Add Help Text for Step</h3><div id="selectedElementPath" class="text-xs text-gray-500 mb-3 break-all">Element: ...</div><textarea id="helpTextInput" placeholder="Enter Help Text" class="w-full p-3 border rounded-md mb-4 h-24 focus:ring-2 focus:ring-green-500"></textarea><div class="flex justify-between items-center"><button id="suggestHelpTextButton" class="px-4 py-2 bg-yellow-400 text-yellow-800 rounded-md hover:bg-yellow-500 transition font-semibold flex items-center justify-center">✨ Suggest Text</button><div class="space-x-3"><button id="cancelHelpTextButton" class="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300">Cancel</button><button id="addHelpTextButton" class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">Add Step</button></div></div></div>
-    <div id="aiCreatePopup" class="fixed bottom-6 right-6 bg-white p-6 rounded-lg shadow-2xl w-full max-w-md popup-fade popup-hidden z-50 border-2 border-green-500"><h3 class="text-xl font-semibold mb-2 text-gray-700">✨ Create Workflow with AI</h3><p class="text-sm text-gray-500 mb-3">Describe the workflow you want to create.</p><textarea id="aiWorkflowInput" placeholder="e.g., Show me how to add a new employee" class="w-full p-3 border rounded-md mb-4 h-24 focus:ring-2 focus:ring-green-500"></textarea><div class="flex justify-end items-center"><div class="space-x-3"><button id="cancelAICreateButton" class="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300">Cancel</button><button id="generateAIWorkflowButton" class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 flex items-center justify-center">Generate</button></div></div></div>
     <div id="runStepPopup" class="fixed bg-white p-6 rounded-lg shadow-2xl w-full max-w-sm popup-fade popup-hidden z-50 border-2 border-purple-500">
         <div id="popupArrow" class="popup-arrow"></div>
         <div class="flex justify-between items-start mb-2">
@@ -409,7 +407,6 @@
             const workflowDropdownButton = document.getElementById('workflowDropdownButton');
             const workflowDropdownPanel = document.getElementById('workflowDropdownPanel');
             const createNewWorkflowLink = document.getElementById('createNewWorkflow');
-            const createWithAI = document.getElementById('createWithAI');
             const availableWorkflowsListDiv = document.getElementById('availableWorkflowsList');
             const aboutToolLink = document.getElementById('aboutTool');
             const aboutModal = document.getElementById('aboutModal');
@@ -441,11 +438,6 @@
             const nextStepChoicePopup = document.getElementById('nextStepChoicePopup');
             const finishFromChoiceButton = document.getElementById('finishFromChoiceButton');
             const addAnotherStepButton = document.getElementById('addAnotherStepButton');
-
-            const aiCreatePopup = document.getElementById('aiCreatePopup');
-            const aiWorkflowInput = document.getElementById('aiWorkflowInput');
-            const cancelAICreateButton = document.getElementById('cancelAICreateButton');
-            const generateAIWorkflowButton = document.getElementById('generateAIWorkflowButton');
             
             // New User Page Elements
             const createUserForm = document.getElementById('createUserForm');
@@ -528,10 +520,6 @@
             async function hideWorkflowNamePopup() { await fadeOut(workflowNamePopup); }
             async function showHelpTextPopup(elementPath) { helpTextInput.value = ''; selectedElementPathDiv.textContent = `Element: ${elementPath.substring(0,50)}...`; await fadeIn(helpTextPopup); helpTextInput.focus(); }
             async function hideHelpTextPopup() { await fadeOut(helpTextPopup); }
-            
-            async function showAICreatePopup() { await fadeIn(aiCreatePopup); aiWorkflowInput.focus(); }
-            async function hideAICreatePopup() { await fadeOut(aiCreatePopup); }
-
 
             async function showRunStepPopup(stepText, currentStep, totalSteps, highlightedElement) {
                 originalHelpText = stepText;
@@ -742,11 +730,22 @@
                 });
             }
 
+            // ===================================================================
+            // ========= USER CREATION FUNCTION - MODIFIED AS REQUESTED =========
+            // ===================================================================
             function handleCreateUser(event) {
                 event.preventDefault();
                 const form = event.target;
+                
+                const empName = form.empName.value.trim();
+
+                // Check if the name is empty and do nothing if it is.
+                if (!empName) {
+                    return; 
+                }
+
                 const newUser = {
-                    name: form.empName.value,
+                    name: empName, // Use the trimmed name
                     email: form.empEmail.value,
                     phone: form.empPhone.value,
                     empId: form.empId.value,
@@ -763,6 +762,9 @@
                 renderUserList();
                 form.reset();
             }
+            // ===================================================================
+            // ====================== END OF MODIFIED CODE =====================
+            // ===================================================================
 
             // --- Workflow Creation Logic ---
             async function saveWorkflowName() {
@@ -926,9 +928,6 @@
                 URL.revokeObjectURL(url);
             }
 
-            // =================================================================
-            // ========= PDF EXPORT FUNCTION - MODIFIED AS REQUESTED =========
-            // =================================================================
             async function exportWorkflowAsPDF(workflowId) {
                 const { jsPDF } = window.jspdf;
                 const workflows = getWorkflowsFromStorage();
@@ -1051,9 +1050,6 @@
                 showPage('home');
                 doc.save(`${workflow.workflowName.replace(/\s+/g, '_')}.pdf`);
             }
-            // =================================================================
-            // ====================== END OF MODIFIED CODE =====================
-            // =================================================================
 
             async function fetchAndDisplayWorkflows() {
                 availableWorkflowsListDiv.innerHTML = '<div class="px-4 py-2 text-sm text-gray-500">Loading...</div>';
@@ -1199,7 +1195,7 @@
                 try {
                     let chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
                     const payload = { contents: chatHistory };
-                    const apiKey = "AIzaSyCxaKOtijwb2ceIteXBMtsqbQydrO10bqU"; // Leave empty for Canvas provided key
+                    const apiKey = ""; // Leave empty for Canvas provided key
                     const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
                     
                     const response = await fetch(apiUrl, {
@@ -1248,7 +1244,7 @@
                 try {
                     let chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
                     const payload = { contents: chatHistory };
-                    const apiKey = "AIzaSyCxaKOtijwb2ceIteXBMtsqbQydrO10bqU"; // Leave empty for Canvas provided key
+                    const apiKey = ""; // Leave empty for Canvas provided key
                     const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
                     
                     const response = await fetch(apiUrl, {
@@ -1372,7 +1368,7 @@
             
             showPage('home');
             fetchAndDisplayWorkflows(); 
-            ['workflowNamePopup', 'helpTextPopup', 'runStepPopup', 'nextStepChoicePopup', 'aiCreatePopup', 'aboutModal'].forEach(id => {
+            ['workflowNamePopup', 'helpTextPopup', 'runStepPopup', 'nextStepChoicePopup', 'aboutModal'].forEach(id => {
                 const el = document.getElementById(id);
                 if(el) el.classList.add('popup-hidden');
             });
