@@ -13,6 +13,7 @@
             margin: 0;
             padding: 0;
             height: 100%;
+            /* Removed overflow: hidden to allow scrolling on the main content area */
         }
         body {  
             font-family: 'Inter', sans-serif;  
@@ -40,11 +41,13 @@
         .custom-modal button {
             padding: 0.5rem 1rem; border-radius: 0.375rem; font-weight: 500; cursor: pointer;
         }
-        .custom-modal .confirm-button { background-color: #3b82f6; color: white; margin-left: 0.5rem; }
+        .custom-modal .confirm-button { color: white; margin-left: 0.5rem; background: linear-gradient(90deg, rgb(49 135 173) 16%, rgb(27, 181, 142) 74%, rgb(57 180 145) 100%);}
         .custom-modal .cancel-button { background-color: #e5e7eb; color: #374151; }
 
         .dropdown-item {
-            display: block;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
             padding: 0.5rem 1rem;
             color: #374151;
             text-decoration: none;
@@ -65,57 +68,75 @@
             opacity: 1;
         }
         
-        /* Arrow styles */
+        /* Active menu item style */
+        .menu-item.active { background-color: #374151; color: white; }
+
+        /* Notification Banner */
+        #notification-banner {
+            position: fixed;
+            top: -100px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 1rem 2rem;
+            border-radius: 0 0 0.5rem 0.5rem;
+            color: white;
+            font-weight: 500;
+            z-index: 2000;
+            transition: top 0.5s ease-in-out;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        #notification-banner.show {
+            top: 0;
+        }
+        
         .popup-arrow {
+            position: absolute;
             width: 0;
             height: 0;
-            position: absolute;
         }
         .popup-arrow.arrow-up {
             border-left: 10px solid transparent;
             border-right: 10px solid transparent;
-            border-bottom: 10px solid #a855f7; /* purple-500 */
+            border-bottom: 10px solid #3b82f6;
         }
         .popup-arrow.arrow-down {
             border-left: 10px solid transparent;
             border-right: 10px solid transparent;
-            border-top: 10px solid #a855f7; /* purple-500 */
+            border-top: 10px solid #3b82f6;
         }
         .popup-arrow.arrow-left {
             border-top: 10px solid transparent;
             border-bottom: 10px solid transparent;
-            border-right: 10px solid #a855f7; /* purple-500 */
+            border-right: 10px solid #3b82f6;
         }
         .popup-arrow.arrow-right {
             border-top: 10px solid transparent;
             border-bottom: 10px solid transparent;
-            border-left: 10px solid #a855f7; /* purple-500 */
-        }
-        
-        /* Active menu item style */
-        .menu-item.active {
-            background-color: #2a7b9b;
-            color: white;
+            border-left: 10px solid #3b82f6;
         }
     </style>
 </head>
 <body class="bg-gray-100 text-gray-800">
+    <div id="notification-banner"></div>
+    <div id="main-overlay" class="fixed inset-0 bg-black/30 z-40 hidden opacity-0 transition-opacity duration-300"></div>
 
     <div class="h-screen flex flex-col">
         <!-- Header -->
-        <header class="text-white shadow-md z-40 flex-shrink-0" style="background: linear-gradient(90deg, rgba(32, 103, 135, 1) 0%, rgb(27, 181, 142) 50%, rgb(0, 162, 186) 100%);">
+        <header class="text-white shadow-md z-40 flex-shrink-0" style="background-color: black;">
             <div class="flex items-center justify-between h-[50px] px-4">
-                <h1 class="text-xl font-bold">DEMO Portal | APG Productivity Hackathon</h1>
+                <h1 class="text-xl font-bold">APG Productivity Hackathon | Demo Portal</h1>
                 <div class="relative">
-                    <button id="workflowDropdownButton" class="flex items-center space-x-2 px-3 py-1.5 bg-white/20 hover:bg-white/30 rounded-md transition text-white">
+                    <button id="workflowDropdownButton" class="flex items-center space-x-2 px-3 py-1.5 rounded-md transition text-white" style="background: linear-gradient(90deg, rgb(49 135 173) 16%, rgb(27, 181, 142) 74%, rgb(57 180 145) 100%);">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
                         <span>Guide Spark</span>
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                     </button>
-                    <div id="workflowDropdownPanel" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 py-1 z-50">
-                        <a href="#" id="createNewWorkflow" class="dropdown-item font-semibold text-gray-800">Create New Workflow</a>
-                        <a href="#" id="aboutTool" class="dropdown-item">About GuideSpark</a>
+                    <div id="workflowDropdownPanel" class="hidden absolute right-0 mt-2 w-72 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 py-1 z-50">
+                        <a href="#" id="createNewWorkflow" class="dropdown-item text-sm">Create New Workflow</a>
+                        <a href="#" id="manageWorkflows" class="dropdown-item text-sm">Manage Workflows...</a>
+                        <a href="#" id="aboutTool" class="dropdown-item text-sm">About GuideSpark</a>
                         <hr class="my-1"/>
+                        <div class="px-4 py-2 text-xs text-gray-400">Run Workflow</div>
                         <div id="availableWorkflowsList" class="max-h-60 overflow-y-auto">
                            <div class="px-4 py-2 text-sm text-gray-500">Loading...</div>
                         </div>
@@ -124,29 +145,29 @@
             </div>
         </header>
         
-        <div class="flex flex-grow relative">
+        <div class="flex flex-grow relative overflow-hidden">
             <!-- Left Side Menu -->
-            <aside id="leftMenu" class="w-16 bg-gray-200 text-gray-600 flex flex-col items-center py-4 space-y-2 flex-shrink-0 border-r border-gray-300">
+            <aside id="leftMenu" class="w-16 bg-gray-600 text-gray-200 flex flex-col items-center py-4 space-y-2 flex-shrink-0 border-r border-gray-300">
                 <div class="has-tooltip relative">
-                    <a href="#" data-page="home" class="menu-item p-3 flex items-center justify-center rounded-full hover:bg-gray-300 text-gray-600 active">
+                    <a href="#" data-page="home" class="menu-item p-3 flex items-center justify-center rounded-full hover:bg-gray-700 hover:text-white">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
                     </a>
                     <span class="tooltip absolute left-full ml-4 px-2 py-1 bg-gray-700 text-white text-xs rounded-md whitespace-nowrap">Home</span>
                 </div>
                 <div class="has-tooltip relative">
-                    <a href="#" data-page="users" class="menu-item p-3 flex items-center justify-center rounded-full hover:bg-gray-300 text-gray-600">
+                    <a href="#" data-page="users" class="menu-item p-3 flex items-center justify-center rounded-full hover:bg-gray-700 hover:text-white">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
                     </a>
                     <span class="tooltip absolute left-full ml-4 px-2 py-1 bg-gray-700 text-white text-xs rounded-md whitespace-nowrap">Users</span>
                 </div>
                 <div class="has-tooltip relative">
-                    <a href="#" data-page="products" class="menu-item p-3 flex items-center justify-center rounded-full hover:bg-gray-300 text-gray-600">
+                    <a href="#" data-page="products" class="menu-item p-3 flex items-center justify-center rounded-full hover:bg-gray-700 hover:text-white">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
                     </a>
                     <span class="tooltip absolute left-full ml-4 px-2 py-1 bg-gray-700 text-white text-xs rounded-md whitespace-nowrap">Products</span>
                 </div>
                 <div class="has-tooltip relative">
-                    <a href="#" data-page="settings" class="menu-item p-3 flex items-center justify-center rounded-full hover:bg-gray-300 text-gray-600">
+                    <a href="#" data-page="settings" class="menu-item p-3 flex items-center justify-center rounded-full hover:bg-gray-700 hover:text-white">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.096 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
                     </a>
                     <span class="tooltip absolute left-full ml-4 px-2 py-1 bg-gray-700 text-white text-xs rounded-md whitespace-nowrap">Settings</span>
@@ -227,45 +248,45 @@
                                     <form id="createUserForm" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 items-end">
                                         <div class="col-span-1">
                                             <label for="empName" class="block text-sm font-medium text-gray-700">Full Name</label>
-                                            <input type="text" id="empName" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                                            <input type="text" id="empName" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
                                         </div>
                                         <div class="col-span-1">
                                             <label for="empEmail" class="block text-sm font-medium text-gray-700">Email ID</label>
-                                            <input type="email" id="empEmail" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                                            <input type="email" id="empEmail" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
                                         </div>
                                         <div class="col-span-1">
                                             <label for="empPhone" class="block text-sm font-medium text-gray-700">Phone</label>
-                                            <input type="tel" id="empPhone" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                                            <input type="tel" id="empPhone" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
                                         </div>
                                          <div class="col-span-1">
                                             <label for="empId" class="block text-sm font-medium text-gray-700">Employee ID</label>
-                                            <input type="text" id="empId" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                                            <input type="text" id="empId" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
                                         </div>
                                          <div class="col-span-1">
                                             <label for="empTechnology" class="block text-sm font-medium text-gray-700">Technology</label>
-                                            <input type="text" id="empTechnology" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                                            <input type="text" id="empTechnology" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
                                         </div>
                                          <div class="col-span-1">
                                             <label for="empExperience" class="block text-sm font-medium text-gray-700">Experience (Yrs)</label>
-                                            <input type="number" id="empExperience" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                                            <input type="number" id="empExperience" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
                                         </div>
                                         <div class="col-span-1">
                                             <label for="empCountry" class="block text-sm font-medium text-gray-700">Country</label>
-                                            <input type="text" id="empCountry" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                                            <input type="text" id="empCountry" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
                                         </div>
                                         <div class="col-span-1">
                                             <label for="empCity" class="block text-sm font-medium text-gray-700">City</label>
-                                            <input type="text" id="empCity" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                                            <input type="text" id="empCity" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
                                         </div>
                                         <div class="col-span-1">
                                             <label for="empGender" class="block text-sm font-medium text-gray-700">Gender</label>
-                                            <select id="empGender" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                                            <select id="empGender" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
                                                 <option>Male</option>
                                                 <option>Female</option>
                                             </select>
                                         </div>
                                         <div class="col-span-1 flex items-end">
-                                            <button type="submit" class="w-full text-white font-bold py-2 px-4 rounded-md" style="background-color: #2a7b9b;">Add Employee</button>
+                                            <button type="submit" class="w-full text-white font-bold py-2 px-4 rounded-md" style="background-color: #075985;">Add Employee</button>
                                         </div>
                                     </form>
                                 </div>
@@ -315,9 +336,34 @@
     </div>
 
     <!-- POPUPS -->
-    <div id="workflowNamePopup" class="fixed bottom-6 right-6 bg-white p-6 rounded-lg shadow-2xl w-full max-w-md popup-fade popup-hidden z-50 border-2 border-blue-500"><h3 class="text-xl font-semibold mb-4 text-gray-700">Create New Workflow</h3><input type="text" id="workflowNameInput" placeholder="Enter Workflow Name" class="w-full p-3 border rounded-md mb-4 focus:ring-2 focus:ring-blue-500"><div class="flex justify-end space-x-3"><button id="cancelWorkflowNameButton" class="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300">Cancel</button><button id="saveWorkflowNameButton" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">Save & Start</button></div></div>
-    <div id="helpTextPopup" class="fixed bottom-6 right-6 bg-white p-6 rounded-lg shadow-2xl w-full max-w-md popup-fade popup-hidden z-50 border-2 border-green-500"><h3 class="text-xl font-semibold mb-2 text-gray-700">Add Help Text for Step</h3><div id="selectedElementPath" class="text-xs text-gray-500 mb-3 break-all">Element: ...</div><textarea id="helpTextInput" placeholder="Enter Help Text" class="w-full p-3 border rounded-md mb-4 h-24 focus:ring-2 focus:ring-green-500"></textarea><div class="flex justify-between items-center"><button id="suggestHelpTextButton" class="px-4 py-2 bg-yellow-400 text-yellow-800 rounded-md hover:bg-yellow-500 transition font-semibold flex items-center justify-center">✨ Suggest Text</button><div class="space-x-3"><button id="cancelHelpTextButton" class="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300">Cancel</button><button id="addHelpTextButton" class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">Add Step</button></div></div></div>
-    <div id="runStepPopup" class="fixed bg-white p-6 rounded-lg shadow-2xl w-full max-w-sm popup-fade popup-hidden z-50 border-2 border-purple-500">
+    <div id="workflowNamePopup" class="fixed bottom-6 right-6 p-6 rounded-lg shadow-2xl w-full max-w-md popup-fade popup-hidden z-50 border-2" style="border-color: #39b590; background-color: white;"><h3 class="text-xl font-semibold mb-4 text-gray-700">Create New Workflow</h3><input type="text" id="workflowNameInput" placeholder="Enter Workflow Name" class="w-full p-3 border rounded-md mb-4 focus:ring-2 focus:ring-blue-500"><div class="flex justify-end space-x-3"><button id="cancelWorkflowNameButton" class="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300">Cancel</button><button id="saveWorkflowNameButton" class="px-4 py-2 text-white rounded-md" style="background: linear-gradient(90deg, rgb(49 135 173) 16%, rgb(27, 181, 142) 74%, rgb(57 180 145) 100%);">Save & Start</button></div></div>
+    
+    <div id="helpTextPopup" class="fixed bottom-6 right-6 p-6 rounded-lg shadow-2xl w-full max-w-md popup-fade popup-hidden z-50 border-2" style="border-color: #39b590; background-color: white;">
+        <!-- View 1: Add help text -->
+        <div id="helpTextInitialView">
+            <h3 class="text-xl font-semibold mb-2 text-gray-700">Add Help Text for Step</h3>
+            <div id="selectedElementPath" class="text-xs text-gray-500 mb-3 break-all">Element: ...</div>
+            <textarea id="helpTextInput" placeholder="Enter Help Text" class="w-full p-3 border rounded-md mb-4 h-24 focus:ring-2 focus:ring-blue-500"></textarea>
+            <div class="flex justify-between items-center">
+                <button id="suggestHelpTextButton" class="px-4 py-2 bg-yellow-400 text-yellow-800 rounded-md hover:bg-yellow-500 transition font-semibold flex items-center justify-center">✨ Suggest Text</button>
+                <div class="space-x-3">
+                    <button id="cancelHelpTextButton" class="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300">Cancel</button>
+                    <button id="addHelpTextButton" class="px-4 py-2 text-white rounded-md" style="background: linear-gradient(90deg, rgb(49 135 173) 16%, rgb(27, 181, 142) 74%, rgb(57 180 145) 100%);">Add Step</button>
+                </div>
+            </div>
+        </div>
+        <!-- View 2: What's next? -->
+        <div id="helpTextNextStepView" class="hidden">
+            <h3 class="text-xl font-semibold mb-4 text-gray-700">Step Added!</h3>
+            <p class="text-gray-600 mb-6">What would you like to do next?</p>
+            <div class="flex justify-end space-x-3">
+                <button id="finishFromHelpPopup" class="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600">Finish Workflow</button>
+                <button id="addAnotherFromHelpPopup" class="px-4 py-2 text-white rounded-md" style="background: linear-gradient(90deg, rgb(49 135 173) 16%, rgb(27, 181, 142) 74%, rgb(57 180 145) 100%);">Add Next Step</button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="runStepPopup" class="fixed p-6 rounded-lg shadow-2xl w-full max-w-sm popup-fade popup-hidden z-50 border-2 border-blue-500" style="background-color: white;">
         <div id="popupArrow" class="popup-arrow"></div>
         <div class="flex justify-between items-start mb-2">
             <h3 class="text-xl font-semibold text-gray-700">Workflow Step</h3>
@@ -350,41 +396,114 @@
             </div>
             <div class="flex justify-end space-x-2">
                  <button id="previousStepButton" class="px-3 py-1.5 text-sm bg-gray-400 text-white rounded-md hover:bg-gray-500">Previous</button>
-                <button id="nextStepButton" class="px-3 py-1.5 text-sm bg-purple-600 text-white rounded-md hover:bg-purple-700">Next</button>
+                <button id="nextStepButton" class="px-3 py-1.5 text-sm text-white rounded-md" style="background: linear-gradient(90deg, rgb(49 135 173) 16%, rgb(27, 181, 142) 74%, rgb(57 180 145) 100%);">Next</button>
             </div>
         </div>
     </div>
-    <div id="nextStepChoicePopup" class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-6 rounded-lg shadow-2xl w-full max-w-md popup-fade popup-hidden z-50 border-2 border-indigo-500">
-        <h3 class="text-xl font-semibold mb-4 text-gray-700">Step Added!</h3>
-        <p class="text-gray-600 mb-6">What would you like to do next?</p>
-        <div class="flex justify-end space-x-3">
-            <button id="finishFromChoiceButton" class="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600">Finish Workflow</button>
-            <button id="addAnotherStepButton" class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">Add Next Step</button>
-        </div>
-    </div>
-    <div id="customModalOverlay" class="custom-modal-overlay"><div class="custom-modal"><h3 id="customModalTitle"></h3><p id="customModalMessage"></p><div class="flex justify-end space-x-2 mt-4"><button id="customModalCancelButton" class="cancel-button">Cancel</button><button id="customModalConfirmButton" class="confirm-button">OK</button></div></div></div>
+    
+    <div id="customModalOverlay" class="custom-modal-overlay hidden"><div class="custom-modal"><h3 id="customModalTitle"></h3><p id="customModalMessage"></p><div class="flex justify-end space-x-2 mt-4"><button id="customModalCancelButton" class="cancel-button">Cancel</button><button id="customModalConfirmButton" class="confirm-button">OK</button></div></div></div>
+    
+    <!-- About Modal -->
     <div id="aboutModal" class="custom-modal-overlay hidden">
-        <div class="custom-modal" style="text-align: left; width: 60%; max-width: 800px;">
+        <div class="custom-modal" style="text-align: left; width: 80%; max-width: 900px;">
             <div class="flex justify-between items-center mb-4">
-                <h3 id="aboutModalTitle" class="text-xl font-bold">About GuideSpark</h3>
+                <h3 class="text-2xl font-bold text-gray-800">About GuideSpark</h3>
                 <button id="closeAboutModal" class="text-gray-500 hover:text-gray-800 text-2xl font-bold">&times;</button>
             </div>
-            <div id="aboutModalContent" class="text-sm">
-                <p class="mb-4"><strong>GuideSpark</strong> is an intuitive, AI-powered workflow builder designed to simplify complex processes and create interactive, step-by-step tutorials and guides directly on your web application.</p>
-                <h4 class="font-semibold mb-2">Key Features:</h4>
-                <ul class="list-disc list-inside mb-4 space-y-1">
-                    <li><strong>No-Code Workflow Creation:</strong> Simply click on elements to build your guide. No programming knowledge required.</li>
-                    <li><strong>AI-Powered Suggestions:</strong> Get intelligent help text suggestions from Gemini to make your instructions clear and effective.</li>
-                    <li><strong>Interactive Guidance:</strong> Run workflows that highlight elements and provide clear, contextual instructions to users in real-time.</li>
-                    <li><strong>Multiple Export Options:</strong> Export your workflows as JSON for easy sharing and backup, or as a professional PDF document for offline use.</li>
-                    <li><strong>Dynamic Page Navigation:</strong> Create workflows that span across different pages and views of your application seamlessly.</li>
+            <div id="aboutModalContent" class="text-sm md:text-base text-gray-600 max-h-[70vh] overflow-y-auto pr-2">
+                <p class="mb-6 text-lg"><strong>GuideSpark</strong> is an intuitive, AI-powered workflow builder designed to simplify complex processes. It enables you to create interactive, step-by-step tutorials and guides directly on your web application, without writing a single line of code.</p>
+                
+                <h4 class="font-bold text-xl mb-4 text-gray-700">How It Works</h4>
+                <div class="flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0 md:space-x-4 mb-8 text-center">
+                    <div class="flex flex-col items-center">
+                        <div class="w-20 h-20 rounded-full flex items-center justify-center text-white" style="background: linear-gradient(to right, #4facfe, #00f2fe);">
+                            <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122"></path></svg>
+                        </div>
+                        <h5 class="font-semibold mt-2">1. Click to Select</h5>
+                        <p class="text-xs">Choose any element on the page.</p>
+                    </div>
+                    <div class="text-gray-400 text-4xl font-light">&rarr;</div>
+                    <div class="flex flex-col items-center">
+                        <div class="w-20 h-20 rounded-full flex items-center justify-center text-white" style="background: linear-gradient(to right, #43e97b, #38f9d7);">
+                            <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
+                        </div>
+                        <h5 class="font-semibold mt-2">2. Add Instructions</h5>
+                        <p class="text-xs">Write clear guidance or let AI suggest it.</p>
+                    </div>
+                    <div class="text-gray-400 text-4xl font-light">&rarr;</div>
+                     <div class="flex flex-col items-center">
+                        <div class="w-20 h-20 rounded-full flex items-center justify-center text-white" style="background: linear-gradient(to right, #fa709a, #fee140);">
+                             <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        </div>
+                        <h5 class="font-semibold mt-2">3. Run & Guide</h5>
+                        <p class="text-xs">Launch the interactive guide for users.</p>
+                    </div>
+                     <div class="text-gray-400 text-4xl font-light">&rarr;</div>
+                     <div class="flex flex-col items-center">
+                        <div class="w-20 h-20 rounded-full flex items-center justify-center text-white" style="background: linear-gradient(to right, #a18cd1, #fbc2eb);">
+                           <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                        </div>
+                        <h5 class="font-semibold mt-2">4. Export & Share</h5>
+                        <p class="text-xs">Download guides as PDF or JSON.</p>
+                    </div>
+                </div>
+
+                <h4 class="font-bold text-xl mb-4 text-gray-700">Key Features</h4>
+                <ul class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
+                    <li class="flex items-start">
+                        <svg class="w-6 h-6 mr-3 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
+                        <div><strong class="font-semibold">No-Code Creation:</strong> Simply click on elements to build your guide. No programming knowledge required.</div>
+                    </li>
+                    <li class="flex items-start">
+                        <svg class="w-6 h-6 mr-3 text-yellow-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path></svg>
+                        <div><strong class="font-semibold">AI-Powered Suggestions:</strong> Get intelligent help text suggestions from Gemini to make your instructions clear and effective.</div>
+                    </li>
+                     <li class="flex items-start">
+                        <svg class="w-6 h-6 mr-3 text-blue-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        <div><strong class="font-semibold">Interactive Guidance:</strong> Run workflows that highlight elements and provide clear, contextual instructions to users in real-time.</div>
+                    </li>
+                    <li class="flex items-start">
+                        <svg class="w-6 h-6 mr-3 text-red-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                        <div><strong class="font-semibold">Multiple Export Options:</strong> Export your workflows as JSON for easy sharing and backup, or as a professional PDF document.</div>
+                    </li>
+                    <li class="flex items-start">
+                         <svg class="w-6 h-6 mr-3 text-purple-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                        <div><strong class="font-semibold">Dynamic Page Navigation:</strong> Create workflows that span across different pages and views of your application seamlessly.</div>
+                    </li>
+                     <li class="flex items-start">
+                        <svg class="w-6 h-6 mr-3 text-indigo-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        <div><strong class="font-semibold">Validity Scanning:</strong> Instantly check if your workflows are still valid after UI changes, preventing broken guides.</div>
+                    </li>
                 </ul>
-                 <h4 class="font-semibold mb-2">Advantages:</h4>
-                <ul class="list-disc list-inside">
-                    <li>Drastically reduce user training time and support tickets.</li>
-                    <li>Improve user onboarding and feature adoption.</li>
-                    <li>Standardize processes and ensure tasks are completed correctly.</li>
-                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Manage Workflows Modal -->
+    <div id="manageWorkflowsModal" class="custom-modal-overlay hidden">
+        <div class="custom-modal" style="text-align: left; width: 80%; max-width: 1024px;">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold">Manage Workflows</h3>
+                <button id="closeManageWorkflowsModal" class="text-gray-500 hover:text-gray-800 text-2xl font-bold">&times;</button>
+            </div>
+            <div class="mb-4 flex space-x-2">
+                 <button id="createNewWorkflowFromManage" class="px-4 py-2 text-white rounded-md" style="background: linear-gradient(90deg, rgb(49 135 173) 16%, rgb(27, 181, 142) 74%, rgb(57 180 145) 100%);">Create New Workflow</button>
+                 <button id="scanWorkflowsButton" class="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600">Scan Workflows</button>
+            </div>
+            <div class="overflow-x-auto bg-white rounded-lg shadow">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="managedWorkflowsTbody" class="bg-white divide-y divide-gray-200">
+                        <!-- Workflow rows will be inserted here by JS -->
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
@@ -404,14 +523,24 @@
 
             // --- UI Elements ---
             const mainScreen = document.getElementById('mainScreen');
+            const mainOverlay = document.getElementById('main-overlay');
             const workflowDropdownButton = document.getElementById('workflowDropdownButton');
             const workflowDropdownPanel = document.getElementById('workflowDropdownPanel');
             const createNewWorkflowLink = document.getElementById('createNewWorkflow');
+            const manageWorkflowsLink = document.getElementById('manageWorkflows');
             const availableWorkflowsListDiv = document.getElementById('availableWorkflowsList');
             const aboutToolLink = document.getElementById('aboutTool');
+            const notificationBanner = document.getElementById('notification-banner');
+
+            // Modals
             const aboutModal = document.getElementById('aboutModal');
             const closeAboutModalButton = document.getElementById('closeAboutModal');
-            
+            const manageWorkflowsModal = document.getElementById('manageWorkflowsModal');
+            const closeManageWorkflowsModalButton = document.getElementById('closeManageWorkflowsModal');
+            const managedWorkflowsTbody = document.getElementById('managedWorkflowsTbody');
+            const createNewWorkflowFromManageBtn = document.getElementById('createNewWorkflowFromManage');
+            const scanWorkflowsButton = document.getElementById('scanWorkflowsButton');
+
             // Popups
             const workflowNamePopup = document.getElementById('workflowNamePopup');
             const workflowNameInput = document.getElementById('workflowNameInput');
@@ -435,9 +564,11 @@
             const showOriginalHelpButton = document.getElementById('showOriginalHelpButton');
             const showOriginalContainer = document.getElementById('showOriginalContainer');
             
-            const nextStepChoicePopup = document.getElementById('nextStepChoicePopup');
-            const finishFromChoiceButton = document.getElementById('finishFromChoiceButton');
-            const addAnotherStepButton = document.getElementById('addAnotherStepButton');
+            // Integrated Help Popup Views & Buttons
+            const helpTextInitialView = document.getElementById('helpTextInitialView');
+            const helpTextNextStepView = document.getElementById('helpTextNextStepView');
+            const finishFromHelpPopupBtn = document.getElementById('finishFromHelpPopup');
+            const addAnotherFromHelpPopupBtn = document.getElementById('addAnotherFromHelpPopup');
             
             // New User Page Elements
             const createUserForm = document.getElementById('createUserForm');
@@ -457,23 +588,42 @@
             function getUsersFromStorage() { const json = localStorage.getItem(USER_STORAGE_KEY); return json ? JSON.parse(json) : []; }
             function saveUsersToStorage(users) { localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(users)); }
 
-            // --- Custom Modal Function ---
-            function showCustomAlert(title, message, isConfirm = false) {
+            // --- Integrated Alert System ---
+            let notificationTimeout;
+            function showInAppAlert(message, type = 'info') {
+                clearTimeout(notificationTimeout);
+                
+                let bgColor;
+                switch(type) {
+                    case 'success': bgColor = 'bg-green-500'; break;
+                    case 'error': bgColor = 'bg-red-500'; break;
+                    default: bgColor = 'bg-blue-500';
+                }
+
+                notificationBanner.className = `fixed left-1/2 transform -translate-x-1/2 p-4 rounded-b-lg shadow-lg text-white ${bgColor}`;
+                notificationBanner.textContent = message;
+                notificationBanner.classList.add('show');
+
+                notificationTimeout = setTimeout(() => {
+                    notificationBanner.classList.remove('show');
+                }, 3000);
+            }
+
+            // --- Custom Modal Function for Confirmations ---
+            function showConfirmationModal(title, message) {
                 const customModal = document.querySelector('#customModalOverlay .custom-modal');
                 const titleEl = customModal.querySelector('h3');
                 const msgEl = customModal.querySelector('p');
-                const buttonsDiv = customModal.querySelector('.flex.justify-end');
                 
                 titleEl.textContent = title;
                 msgEl.textContent = message;
 
-                buttonsDiv.querySelector('.cancel-button').style.display = isConfirm ? 'inline-block' : 'none';
-                
-                customModalOverlay.classList.add('active');
+                customModalOverlay.classList.remove('hidden');
+                setTimeout(() => customModalOverlay.classList.add('active'), 10);
 
                 return new Promise((resolve) => {
-                    customModal.querySelector('.confirm-button').onclick = () => { customModalOverlay.classList.remove('active'); resolve(true); };
-                    customModal.querySelector('.cancel-button').onclick = () => { customModalOverlay.classList.remove('active'); resolve(false); };
+                    customModal.querySelector('.confirm-button').onclick = () => { customModalOverlay.classList.remove('active'); setTimeout(() => customModalOverlay.classList.add('hidden'), 300); resolve(true); };
+                    customModal.querySelector('.cancel-button').onclick = () => { customModalOverlay.classList.remove('active'); setTimeout(() => customModalOverlay.classList.add('hidden'), 300); resolve(false); };
                 });
             }
             
@@ -487,26 +637,29 @@
                     renderDashboard();
                 }
             }
+            
+            function fadeOut(element, isMainPopup = true) {
+                if(isMainPopup) {
+                    mainOverlay.style.opacity = '0';
+                    setTimeout(() => mainOverlay.classList.add('hidden'), 300);
+                }
 
-            function fadeOut(element, callback) {
-                document.body.classList.remove('popup-active');
                 return new Promise(resolve => {
                     element.style.opacity = '0';
                     setTimeout(() => {
                         element.classList.add('popup-hidden');
                         element.classList.remove('popup-visible');
-                        if(callback) callback();
                         resolve();
                     }, 300);
                 });
             }
 
-            function fadeIn(element, isPopup = true) {
+            function fadeIn(element, isMainPopup = true) {
+                if(isMainPopup){
+                    mainOverlay.classList.remove('hidden');
+                    setTimeout(() => mainOverlay.style.opacity = '1', 10);
+                }
                  return new Promise(resolve => {
-                    if (isPopup) {
-                        document.body.classList.add('popup-active');
-                        element.style.opacity = '0';
-                    }
                     element.classList.remove('popup-hidden');
                     element.classList.add('popup-visible');
                     setTimeout(() => {
@@ -518,7 +671,16 @@
             
             async function showWorkflowNamePopup() { await fadeIn(workflowNamePopup); workflowNameInput.focus(); }
             async function hideWorkflowNamePopup() { await fadeOut(workflowNamePopup); }
-            async function showHelpTextPopup(elementPath) { helpTextInput.value = ''; selectedElementPathDiv.textContent = `Element: ${elementPath.substring(0,50)}...`; await fadeIn(helpTextPopup); helpTextInput.focus(); }
+            
+            async function showHelpTextPopup(elementPath) { 
+                helpTextInput.value = ''; 
+                selectedElementPathDiv.textContent = `Element: ${elementPath.substring(0,50)}...`; 
+                helpTextInitialView.classList.remove('hidden');
+                helpTextNextStepView.classList.add('hidden');
+                await fadeIn(helpTextPopup); 
+                helpTextInput.focus(); 
+            }
+            
             async function hideHelpTextPopup() { await fadeOut(helpTextPopup); }
 
             async function showRunStepPopup(stepText, currentStep, totalSteps, highlightedElement) {
@@ -642,14 +804,6 @@
                 await fadeOut(runStepPopup); 
             }
 
-            async function showNextStepChoicePopup() {
-                await fadeIn(nextStepChoicePopup);
-            }
-
-            async function hideNextStepChoicePopup() {
-                await fadeOut(nextStepChoicePopup);
-            }
-
             // --- Dashboard Logic ---
             function renderDashboard() {
                 setTimeout(() => {
@@ -676,8 +830,8 @@
                             datasets: [{
                                 label: 'Sales',
                                 data: [120000, 190000, 300000, 500000, 200000, 300000],
-                                backgroundColor: 'rgba(37, 201, 162, 0.2)',
-                                borderColor: 'rgba(37, 201, 162, 1)',
+                                backgroundColor: 'rgba(59, 130, 246, 0.2)',
+                                borderColor: 'rgba(59, 130, 246, 1)',
                                 borderWidth: 2,
                                 tension: 0.4
                             }]
@@ -695,7 +849,7 @@
                             datasets: [{
                                 label: 'Sales by Geography',
                                 data: [1200000, 850000, 550000, 245000],
-                                backgroundColor: ['#2a7b9b', '#25c9a2', '#0ab6ce', '#f97316'],
+                                backgroundColor: ['#2563eb', '#3b82f6', '#60a5fa', '#93c5fd'],
                             }]
                         },
                         options: { scales: { y: { beginAtZero: true } } }
@@ -730,9 +884,6 @@
                 });
             }
 
-            // ===================================================================
-            // ========= USER CREATION FUNCTION - MODIFIED AS REQUESTED =========
-            // ===================================================================
             function handleCreateUser(event) {
                 event.preventDefault();
                 const form = event.target;
@@ -762,14 +913,11 @@
                 renderUserList();
                 form.reset();
             }
-            // ===================================================================
-            // ====================== END OF MODIFIED CODE =====================
-            // ===================================================================
 
             // --- Workflow Creation Logic ---
             async function saveWorkflowName() {
                 const name = workflowNameInput.value.trim();
-                if (!name) { showCustomAlert("Input Required", "Please enter a workflow name."); return; }
+                if (!name) { showInAppAlert("Please enter a workflow name.", "error"); return; }
                 const newWorkflow = { id: `wf_${Date.now()}`, workflowName: name, createdAt: new Date().toISOString(), steps: [] };
                 const workflows = getWorkflowsFromStorage();
                 workflows.push(newWorkflow);
@@ -779,7 +927,8 @@
                 currentStepNumber = 1;
                 await hideWorkflowNamePopup();
                 enableElementSelectionMode();
-                await showCustomAlert("Workflow Created", `"${name}" created. Select element for Step 1.`);
+                showInAppAlert(`"${name}" created. Select element for Step 1.`, "success");
+                await fetchAndDisplayWorkflows(); // Refresh lists
             }
             
             function getElementPath(element) {
@@ -799,7 +948,7 @@
             function handleElementMouseOver(event) {
                 if (!isElementSelectionMode) return;
                 
-                const ignoredElementsOrParents = ['.popup-fade', '#customModalOverlay', '#aboutModal', 'header', '#workflowDropdownButton', '#workflowDropdownPanel'];
+                const ignoredElementsOrParents = ['.popup-fade', '#customModalOverlay', '#aboutModal', '#manageWorkflowsModal', 'header', '#workflowDropdownButton', '#workflowDropdownPanel', '#main-overlay'];
                 if (ignoredElementsOrParents.some(selector => event.target.closest(selector))) {
                     if (highlightedElementForSelection) {
                         highlightedElementForSelection.classList.remove('element-hover-outline');
@@ -825,7 +974,7 @@
             async function handleElementClick(event) {
                 if (!isElementSelectionMode) return;
 
-                const ignoredElementsOrParents = ['.popup-fade', '#customModalOverlay', '#aboutModal', 'header', '#workflowDropdownButton', '#workflowDropdownPanel'];
+                const ignoredElementsOrParents = ['.popup-fade', '#customModalOverlay', '#aboutModal', '#manageWorkflowsModal', 'header', '#workflowDropdownButton', '#workflowDropdownPanel', '#main-overlay'];
                 if (ignoredElementsOrParents.some(selector => event.target.closest(selector))) {
                     return;
                 }
@@ -848,9 +997,9 @@
             }
 
             async function addHelpTextStep() {
-                if (!currentWorkflowId) { showCustomAlert("Error", "No active workflow."); return; }
+                if (!currentWorkflowId) { showInAppAlert("No active workflow.", "error"); return; }
                 const helpText = helpTextInput.value.trim(); const elementPath = helpTextPopup.dataset.elementPath;
-                if (!helpText || !elementPath) { showCustomAlert("Input Required", "Help text and element are required."); return; }
+                if (!helpText || !elementPath) { showInAppAlert("Help text and element are required.", "error"); return; }
                 
                 const targetElement = document.querySelector(elementPath);
                 if(targetElement && typeof targetElement.click === 'function') {
@@ -860,20 +1009,21 @@
                 const newStep = { stepNumber: currentStepNumber, elementPath, helpText, createdAt: new Date().toISOString() };
                 const workflows = getWorkflowsFromStorage();
                 const workflowIndex = workflows.findIndex(wf => wf.id === currentWorkflowId);
-                if (workflowIndex === -1) { showCustomAlert("Error", "Could not find workflow to save step."); return; }
+                if (workflowIndex === -1) { showInAppAlert("Could not find workflow to save step.", "error"); return; }
                 workflows[workflowIndex].steps.push(newStep);
                 saveWorkflowsToStorage(workflows);
                 currentStepNumber++;
-                await hideHelpTextPopup();
-                await fadeIn(mainScreen, false);
-                await showNextStepChoicePopup();
+
+                // Instead of hiding and showing another popup, just switch views
+                helpTextInitialView.classList.add('hidden');
+                helpTextNextStepView.classList.remove('hidden');
             }
             
             async function finishWorkflow() {
                 const workflowNameBeingFinished = currentWorkflowName;
                 currentWorkflowId = null; currentWorkflowName = ''; currentStepNumber = 1;
                 disableElementSelectionMode();
-                await showCustomAlert("Workflow Finished", `"${workflowNameBeingFinished || 'Workflow'}" has been saved.`);
+                showInAppAlert(`"${workflowNameBeingFinished || 'Workflow'}" has been saved.`, "success");
                 await fetchAndDisplayWorkflows();
             }
 
@@ -899,12 +1049,62 @@
             async function cancelHelpTextEntry() { await hideHelpTextPopup(); await fadeIn(mainScreen, false); if (currentWorkflowId) enableElementSelectionMode(); }
 
             // --- Workflow Listing, Running & Editing ---
+            
+            function checkWorkflowValidity(workflow) {
+                if (!workflow.steps || workflow.steps.length === 0) return true; // No steps = valid
+                for (const step of workflow.steps) {
+                    try {
+                        if (!document.querySelector(step.elementPath)) {
+                            return false; // Found an invalid element path
+                        }
+                    } catch (e) {
+                        console.warn(`Invalid selector for workflow "${workflow.workflowName}": ${step.elementPath}`);
+                        return false;
+                    }
+                }
+                return true; // All element paths are valid
+            }
+
+            async function renderManagedWorkflows() {
+                const workflows = getWorkflowsFromStorage().sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+                managedWorkflowsTbody.innerHTML = '';
+                if (workflows.length === 0) {
+                    managedWorkflowsTbody.innerHTML = `<tr><td colspan="4" class="text-center text-gray-500 py-8">No workflows found.</td></tr>`;
+                    return;
+                }
+
+                workflows.forEach(wf => {
+                    const isValid = checkWorkflowValidity(wf);
+                    const row = document.createElement('tr');
+                    const createdDate = new Date(wf.createdAt).toLocaleDateString();
+
+                    row.innerHTML = `
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${wf.workflowName}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm">
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${isValid ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
+                                ${isValid ? 'Valid' : 'Invalid'}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${createdDate}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
+                            <button data-action="run" data-id="${wf.id}" class="text-blue-600 hover:text-blue-900">Run</button>
+                            <button data-action="edit" data-id="${wf.id}" class="text-indigo-600 hover:text-indigo-900">Edit</button>
+                            <button data-action="export-pdf" data-id="${wf.id}" class="text-red-600 hover:text-red-900">PDF</button>
+                            <button data-action="export-json" data-id="${wf.id}" class="text-yellow-600 hover:text-yellow-900">JSON</button>
+                            <button data-action="delete" data-id="${wf.id}" class="text-gray-500 hover:text-gray-900">Delete</button>
+                        </td>
+                    `;
+                    managedWorkflowsTbody.appendChild(row);
+                });
+            }
+
             async function deleteWorkflow(workflowId) {
-                const confirmed = await showCustomAlert("Confirm Deletion", "Are you sure you want to delete this workflow? This action cannot be undone.", true);
+                const confirmed = await showConfirmationModal("Confirm Deletion", "Are you sure you want to delete this workflow? This action cannot be undone.");
                 if (confirmed) {
                     let workflows = getWorkflowsFromStorage();
                     const updatedWorkflows = workflows.filter(wf => wf.id !== workflowId);
                     saveWorkflowsToStorage(updatedWorkflows);
+                    showInAppAlert("Workflow deleted successfully.", "success");
                     await fetchAndDisplayWorkflows();
                 }
             }
@@ -913,7 +1113,7 @@
                 const workflows = getWorkflowsFromStorage();
                 const workflow = workflows.find(wf => wf.id === workflowId);
                 if (!workflow) {
-                    showCustomAlert("Error", "Could not find workflow to export.");
+                    showInAppAlert("Could not find workflow to export.", "error");
                     return;
                 }
                 const jsonString = JSON.stringify(workflow, null, 2);
@@ -934,10 +1134,10 @@
                 const workflow = workflows.find(wf => wf.id === workflowId);
 
                 if (!workflow) {
-                    showCustomAlert("Error", "Could not find workflow to export.");
+                    showInAppAlert("Could not find workflow to export.", "error");
                     return;
                 }
-                await showCustomAlert("Generating PDF", "Please wait while the PDF is being generated. This may take a moment.");
+                showInAppAlert("Generating PDF... Please wait.");
 
                 const doc = new jsPDF({
                     orientation: 'p',
@@ -1001,9 +1201,10 @@
                     if (targetElement && typeof targetElement.click === 'function') {
                         targetElement.click();
                     }
-                    await new Promise(resolve => setTimeout(resolve, 200));
-
+                    
                     if (targetElement) {
+                        targetElement.scrollIntoView({ behavior: 'auto', block: 'center' });
+                        await new Promise(resolve => setTimeout(resolve, 400));
                         targetElement.classList.add('element-running-highlight');
                     }
                     
@@ -1012,6 +1213,8 @@
 
                     await showRunStepPopup(step.helpText, step.stepNumber, sortedSteps.length, targetElement);
                     
+                    notificationBanner.style.display = 'none';
+
                     const canvas = await html2canvas(document.body, {
                         x: document.body.getBoundingClientRect().left,
                         y: document.body.getBoundingClientRect().top,
@@ -1021,6 +1224,7 @@
                         scale: 2
                     });
                     
+                    notificationBanner.style.display = '';
                     if(runStepButtons) runStepButtons.style.display = 'flex';
 
                     const imgData = canvas.toDataURL('image/png');
@@ -1052,76 +1256,81 @@
             }
 
             async function fetchAndDisplayWorkflows() {
-                availableWorkflowsListDiv.innerHTML = '<div class="px-4 py-2 text-sm text-gray-500">Loading...</div>';
-                setTimeout(() => {
-                    const workflows = getWorkflowsFromStorage().sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-                    if (!workflows.length) { availableWorkflowsListDiv.innerHTML = '<div class="px-4 py-2 text-sm text-gray-500">No workflows yet.</div>'; return; }
-                    availableWorkflowsListDiv.innerHTML = '';
+                // This function now populates BOTH the dropdown and the management modal (if visible)
+                const workflows = getWorkflowsFromStorage().sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+                
+                // Populate simple dropdown
+                availableWorkflowsListDiv.innerHTML = '';
+                if (!workflows.length) { 
+                    availableWorkflowsListDiv.innerHTML = '<div class="px-4 py-2 text-sm text-gray-500">No workflows yet.</div>'; 
+                } else {
                     workflows.forEach(wf => {
-                        const wfContainer = document.createElement('div');
-                        wfContainer.className = 'group px-2 py-1 flex items-center justify-between hover:bg-gray-100 rounded-md';
+                        const itemContainer = document.createElement('div');
+                        itemContainer.className = 'dropdown-item';
 
                         const wfLink = document.createElement('a');
                         wfLink.href = '#';
                         wfLink.textContent = wf.workflowName;
-                        wfLink.className = 'text-sm text-gray-700 truncate flex-grow cursor-pointer';
+                        wfLink.className = 'text-sm flex-grow';
                         wfLink.onclick = (e) => {
                             e.stopPropagation();
                             workflowDropdownPanel.classList.add('hidden');
-                            if (currentWorkflowId || runningWorkflowData) { showCustomAlert("Workflow Active", "Please finish current activity first."); return; }
-                            startWorkflowRun(wf.id, wf.workflowName, wf.steps);
+                            if (currentWorkflowId || runningWorkflowData) { showInAppAlert("Workflow Active. Please finish current activity first.", "error"); return; }
+                            startWorkflowRun(wf.id);
                         };
 
                         const buttonsContainer = document.createElement('div');
-                        buttonsContainer.className = 'flex items-center space-x-1 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity';
-                        
-                        const jsonButton = document.createElement('button');
-                        jsonButton.className = 'p-1 hover:bg-gray-300 rounded-full';
-                        jsonButton.title = 'Export as JSON';
-                        jsonButton.innerHTML = `<svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>`;
-                        jsonButton.onclick = (e) => { e.stopPropagation(); exportWorkflowAsJSON(wf.id); };
-                        
+                        buttonsContainer.className = 'flex items-center space-x-2 ml-2';
+
                         const pdfButton = document.createElement('button');
-                        pdfButton.className = 'p-1 hover:bg-gray-300 rounded-full';
+                        pdfButton.className = 'p-1 hover:bg-gray-200 rounded-full';
                         pdfButton.title = 'Export as PDF';
-                        pdfButton.innerHTML = `<svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>`;
+                        pdfButton.innerHTML = `<svg class="w-4 h-4 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>`;
                         pdfButton.onclick = (e) => { e.stopPropagation(); exportWorkflowAsPDF(wf.id); };
                         
-                        const editButton = document.createElement('button');
-                        editButton.className = 'p-1 hover:bg-gray-300 rounded-full';
-                        editButton.title = 'Edit Workflow';
-                        editButton.innerHTML = `<svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>`;
-                        editButton.onclick = (e) => { e.stopPropagation(); workflowDropdownPanel.classList.add('hidden'); if (currentWorkflowId || runningWorkflowData) { showCustomAlert("Workflow Active", "Please finish current activity first."); return; } startWorkflowEdit(wf); };
+                        const jsonButton = document.createElement('button');
+                        jsonButton.className = 'p-1 hover:bg-gray-200 rounded-full';
+                        jsonButton.title = 'Export as JSON';
+                        jsonButton.innerHTML = `<svg class="w-4 h-4 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>`;
+                        jsonButton.onclick = (e) => { e.stopPropagation(); exportWorkflowAsJSON(wf.id); };
                         
-                        const deleteButton = document.createElement('button');
-                        deleteButton.className = 'p-1 hover:bg-gray-300 rounded-full';
-                        deleteButton.title = 'Delete Workflow';
-                        deleteButton.innerHTML = `<svg class="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>`;
-                        deleteButton.onclick = (e) => { e.stopPropagation(); workflowDropdownPanel.classList.add('hidden'); deleteWorkflow(wf.id); };
-
-                        buttonsContainer.appendChild(jsonButton);
                         buttonsContainer.appendChild(pdfButton);
-                        buttonsContainer.appendChild(editButton);
-                        buttonsContainer.appendChild(deleteButton);
-                        wfContainer.appendChild(wfLink);
-                        wfContainer.appendChild(buttonsContainer);
-                        availableWorkflowsListDiv.appendChild(wfContainer);
+                        buttonsContainer.appendChild(jsonButton);
+                        itemContainer.appendChild(wfLink);
+                        itemContainer.appendChild(buttonsContainer);
+                        availableWorkflowsListDiv.appendChild(itemContainer);
                     });
-                }, 100);
+                }
+                
+                // Re-render the management modal list if it's open
+                if (manageWorkflowsModal.classList.contains('active')) {
+                   await renderManagedWorkflows();
+                }
             }
             
-            async function startWorkflowEdit(workflow) {
-                if (!workflow || !workflow.id) { showCustomAlert("Error", "Invalid workflow data for editing."); return; }
+            async function startWorkflowEdit(workflowId) {
+                const workflows = getWorkflowsFromStorage();
+                const workflow = workflows.find(wf => wf.id === workflowId);
+                if (!workflow || !workflow.id) { showInAppAlert("Invalid workflow data for editing.", "error"); return; }
+                
                 currentWorkflowId = workflow.id;
                 currentWorkflowName = workflow.workflowName;
                 currentStepNumber = (workflow.steps ? workflow.steps.length : 0) + 1;
-                await showCustomAlert("Editing Workflow", `Resumed editing for "${currentWorkflowName}". Select element for Step ${currentStepNumber}.`);
+
+                manageWorkflowsModal.classList.remove('active');
+                setTimeout(() => manageWorkflowsModal.classList.add('hidden'), 300);
+                showInAppAlert(`Resumed editing for "${currentWorkflowName}". Select element for Step ${currentStepNumber}.`);
                 enableElementSelectionMode();
             }
 
-            function startWorkflowRun(id, name, steps) {
-                if (!steps || !steps.length) { showCustomAlert("Empty Workflow", `"${name}" has no steps.`); return; }
-                runningWorkflowData = { id, name, steps: [...steps].sort((a,b) => a.stepNumber - b.stepNumber) };
+            function startWorkflowRun(workflowId) {
+                const workflows = getWorkflowsFromStorage();
+                const workflow = workflows.find(wf => wf.id === workflowId);
+                if (!workflow || !workflow.steps || !workflow.steps.length) { 
+                    showInAppAlert(`"${workflow.name}" has no steps.`, "error"); 
+                    return; 
+                }
+                runningWorkflowData = { ...workflow, steps: [...workflow.steps].sort((a,b) => a.stepNumber - b.stepNumber) };
                 currentRunningStepIndex = 0;
                 disableElementSelectionMode();
                 executeCurrentStep();
@@ -1143,7 +1352,10 @@
                 
                 if (targetElement) {
                     if(typeof targetElement.click === 'function') {
-                        targetElement.click();
+                        // Check if the element is a menu item to prevent multiple clicks
+                        if(!targetElement.classList.contains('menu-item') || !targetElement.classList.contains('active')) {
+                           targetElement.click();
+                        }
                     }
                     
                     setTimeout(async () => {
@@ -1184,7 +1396,7 @@
                 await hideRunStepPopup();
                 const workflowName = runningWorkflowData ? runningWorkflowData.name : "Workflow";
                 runningWorkflowData = null; currentRunningStepIndex = 0;
-                await showCustomAlert(completed ? "Workflow Complete" : "Workflow Ended");
+                showInAppAlert(completed ? "Workflow Complete" : "Workflow Ended", "success");
             }
             
             // --- Translation ---
@@ -1217,7 +1429,7 @@
                     }
                 } catch (error) {
                     console.error("Translation API Error:", error);
-                    showCustomAlert("Translation Error", "Could not translate the text at this time.");
+                    showInAppAlert("Could not translate the text at this time.", "error");
                 } finally {
                      moreOptionsButton.innerHTML = `<svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m4 4L8 17M13 17l-5-5m5 5a2.5 2.5 0 110-5 2.5 2.5 0 010 5z" /></svg>`;
                     moreOptionsPanel.classList.add('hidden');
@@ -1239,7 +1451,7 @@
                 const prompt = `Generate a very short, one-sentence help text for a workflow tutorial. The user needs to interact with a ${elementType}. The help text should be a clear instruction. For example, if it's a "Save" button, suggest something like "Click here to save your changes."`;
 
                 suggestHelpTextButton.disabled = true;
-                suggestHelpTextButton.innerHTML = `<svg class="animate-spin h-5 w-5 mr-3 text-yellow-800" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Suggesting...`;
+                suggestHelpTextButton.innerHTML = `<svg class="animate-spin h-5 w-5 mr-3 text-gray-700" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Suggesting...`;
 
                 try {
                     let chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
@@ -1270,7 +1482,7 @@
 
                 } catch (error) {
                     console.error("Gemini API Error:", error);
-                    showCustomAlert("AI Error", "Could not generate a suggestion at this time.");
+                    showInAppAlert("Could not generate a suggestion at this time.", "error");
                 } finally {
                     suggestHelpTextButton.disabled = false;
                     suggestHelpTextButton.innerHTML = `✨ Suggest Text`;
@@ -1280,19 +1492,79 @@
             // --- Event Listeners ---
             aboutToolLink.addEventListener('click', (e) => {
                 e.preventDefault();
-                aboutModal.classList.remove('hidden', 'popup-hidden');
-                aboutModal.classList.add('active');
+                aboutModal.classList.remove('hidden');
+                setTimeout(() => aboutModal.classList.add('active'), 10);
             });
-
             closeAboutModalButton.addEventListener('click', () => {
-                aboutModal.classList.add('hidden');
                 aboutModal.classList.remove('active');
+                setTimeout(() => aboutModal.classList.add('hidden'), 300);
             });
-
             aboutModal.addEventListener('click', (e) => {
                 if (e.target === aboutModal) {
-                    aboutModal.classList.add('hidden');
                     aboutModal.classList.remove('active');
+                    setTimeout(() => aboutModal.classList.add('hidden'), 300);
+                }
+            });
+
+            manageWorkflowsLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                workflowDropdownPanel.classList.add('hidden');
+                renderManagedWorkflows();
+                manageWorkflowsModal.classList.remove('hidden');
+                setTimeout(() => manageWorkflowsModal.classList.add('active'), 10);
+            });
+            closeManageWorkflowsModalButton.addEventListener('click', () => {
+                manageWorkflowsModal.classList.remove('active');
+                setTimeout(() => manageWorkflowsModal.classList.add('hidden'), 300);
+            });
+            manageWorkflowsModal.addEventListener('click', (e) => {
+                if (e.target === manageWorkflowsModal) {
+                    manageWorkflowsModal.classList.remove('active');
+                    setTimeout(() => manageWorkflowsModal.classList.add('hidden'), 300);
+                }
+            });
+            createNewWorkflowFromManageBtn.addEventListener('click', () => {
+                manageWorkflowsModal.classList.remove('active');
+                setTimeout(() => manageWorkflowsModal.classList.add('hidden'), 300);
+                if (runningWorkflowData || currentWorkflowId) { showInAppAlert("Workflow Active. Please finish current activity first.", "error"); return; } 
+                showWorkflowNamePopup();
+            });
+            scanWorkflowsButton.addEventListener('click', async () => {
+                await renderManagedWorkflows();
+                showInAppAlert("Scan Complete. Workflow statuses have been updated.", "success");
+            });
+
+            managedWorkflowsTbody.addEventListener('click', async (e) => {
+                const button = e.target.closest('button');
+                if (!button) return;
+
+                const action = button.dataset.action;
+                const id = button.dataset.id;
+                if (!action || !id) return;
+                
+                manageWorkflowsModal.classList.remove('active');
+                setTimeout(() => manageWorkflowsModal.classList.add('hidden'), 300);
+
+                await new Promise(r => setTimeout(r, 100)); // allow modal to hide
+
+                switch(action) {
+                    case 'run':
+                        if (currentWorkflowId || runningWorkflowData) { showInAppAlert("Workflow Active. Please finish current activity first.", "error"); return; }
+                        startWorkflowRun(id);
+                        break;
+                    case 'edit':
+                         if (currentWorkflowId || runningWorkflowData) { showInAppAlert("Workflow Active. Please finish current activity first.", "error"); return; }
+                        startWorkflowEdit(id);
+                        break;
+                    case 'export-pdf':
+                        exportWorkflowAsPDF(id);
+                        break;
+                    case 'export-json':
+                        exportWorkflowAsJSON(id);
+                        break;
+                    case 'delete':
+                        await deleteWorkflow(id);
+                        break;
                 }
             });
 
@@ -1305,7 +1577,7 @@
                     moreOptionsPanel.classList.add('hidden');
                 }
             });
-            createNewWorkflowLink.addEventListener('click', (e) => { e.preventDefault(); workflowDropdownPanel.classList.add('hidden'); if (runningWorkflowData || currentWorkflowId) { showCustomAlert("Workflow Active", "Please finish current activity first."); return; } showWorkflowNamePopup(); });
+            createNewWorkflowLink.addEventListener('click', (e) => { e.preventDefault(); workflowDropdownPanel.classList.add('hidden'); if (runningWorkflowData || currentWorkflowId) { showInAppAlert("Workflow Active. Please finish current activity first.", "error"); return; } showWorkflowNamePopup(); });
             saveWorkflowNameButton.addEventListener('click', saveWorkflowName);
             cancelWorkflowNameButton.addEventListener('click', cancelWorkflowCreation);
             addHelpTextButton.addEventListener('click', addHelpTextStep);
@@ -1314,8 +1586,10 @@
                 const elementPath = helpTextPopup.dataset.elementPath;
                 if(elementPath) getHelpTextSuggestion(elementPath);
             });
-            addAnotherStepButton.addEventListener('click', () => { hideNextStepChoicePopup().then(() => enableElementSelectionMode()); });
-            finishFromChoiceButton.addEventListener('click', () => { hideNextStepChoicePopup().then(() => finishWorkflow()); });
+
+            finishFromHelpPopupBtn.addEventListener('click', () => { hideHelpTextPopup().then(() => finishWorkflow()); });
+            addAnotherFromHelpPopupBtn.addEventListener('click', () => { hideHelpTextPopup().then(() => enableElementSelectionMode()); });
+
             nextStepButton.addEventListener('click', handleNextStep);
             previousStepButton.addEventListener('click', handlePreviousStep);
             endWorkflowRunButton.addEventListener('click', () => endWorkflowRun(false));
@@ -1368,7 +1642,7 @@
             
             showPage('home');
             fetchAndDisplayWorkflows(); 
-            ['workflowNamePopup', 'helpTextPopup', 'runStepPopup', 'nextStepChoicePopup', 'aboutModal'].forEach(id => {
+            ['workflowNamePopup', 'helpTextPopup', 'runStepPopup'].forEach(id => {
                 const el = document.getElementById(id);
                 if(el) el.classList.add('popup-hidden');
             });
