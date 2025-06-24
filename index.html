@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Workflow Builder</title>
+    <title>APG Productivity Hackathon | Demo Portal</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -13,7 +13,7 @@
             margin: 0;
             padding: 0;
             height: 100%;
-            /* Removed overflow: hidden to allow scrolling on the main content area */
+            overflow: hidden; /* Prevent body scrollbars */
         }
         body {  
             font-family: 'Inter', sans-serif;  
@@ -239,7 +239,7 @@
                     </div>
 
                     <div id="users" class="page-view hidden p-8">
-                           <div class="bg-white p-8 rounded-lg shadow-xl">
+                            <div class="bg-white p-8 rounded-lg shadow-xl">
                                 <h2 class="text-3xl font-semibold mb-6 text-gray-700">User Management</h2>
 
                                 <!-- Create User Form -->
@@ -286,7 +286,7 @@
                                             </select>
                                         </div>
                                         <div class="col-span-1 flex items-end">
-                                            <button type="submit" class="w-full text-white font-bold py-2 px-4 rounded-md" style="background-color: #075985;">Add Employee</button>
+                                            <button type="button" id="addEmployeeButton" class="w-full text-white font-bold py-2 px-4 rounded-md" style="background-color: #075985;">Add Employee</button>
                                         </div>
                                     </form>
                                 </div>
@@ -336,7 +336,17 @@
     </div>
 
     <!-- POPUPS -->
-    <div id="workflowNamePopup" class="fixed bottom-6 right-6 p-6 rounded-lg shadow-2xl w-full max-w-md popup-fade popup-hidden z-50 border-2" style="border-color: #39b590; background-color: white;"><h3 class="text-xl font-semibold mb-4 text-gray-700">Create New Workflow</h3><input type="text" id="workflowNameInput" placeholder="Enter Workflow Name" class="w-full p-3 border rounded-md mb-4 focus:ring-2 focus:ring-blue-500"><div class="flex justify-end space-x-3"><button id="cancelWorkflowNameButton" class="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300">Cancel</button><button id="saveWorkflowNameButton" class="px-4 py-2 text-white rounded-md" style="background: linear-gradient(90deg, rgb(49 135 173) 16%, rgb(27, 181, 142) 74%, rgb(57 180 145) 100%);">Save & Start</button></div></div>
+    <div id="workflowNamePopup" class="fixed bottom-6 right-6 p-6 rounded-lg shadow-2xl w-full max-w-md popup-fade popup-hidden z-50 border-2" style="border-color: #39b590; background-color: white;">
+        <h3 class="text-xl font-semibold mb-4 text-gray-700">Create New Workflow</h3>
+        <input type="text" id="workflowNameInput" placeholder="Enter Workflow Name" class="w-full p-3 border rounded-md mb-4 focus:ring-2 focus:ring-blue-500">
+        <div class="flex justify-end space-x-3">
+            <button id="cancelWorkflowNameButton" class="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300">Cancel</button>
+            <button id="saveWorkflowNameButton" class="px-4 py-2 text-white rounded-md" style="background: linear-gradient(90deg, rgb(49 135 173) 16%, rgb(27, 181, 142) 74%, rgb(57 180 145) 100%);">Save & Start</button>
+        </div>
+        <div class="mt-4 pt-4 border-t border-gray-200 text-center text-xs text-gray-400">
+            GuideSpark - Team Columbus
+        </div>
+    </div>
     
     <div id="helpTextPopup" class="fixed bottom-6 right-6 p-6 rounded-lg shadow-2xl w-full max-w-md popup-fade popup-hidden z-50 border-2" style="border-color: #39b590; background-color: white;">
         <!-- View 1: Add help text -->
@@ -351,13 +361,16 @@
                     <button id="addHelpTextButton" class="px-4 py-2 text-white rounded-md" style="background: linear-gradient(90deg, rgb(49 135 173) 16%, rgb(27, 181, 142) 74%, rgb(57 180 145) 100%);">Add Step</button>
                 </div>
             </div>
+             <div class="mt-4 pt-4 border-t border-gray-200 text-center text-xs text-gray-400">
+                GuideSpark - Team Columbus
+            </div>
         </div>
         <!-- View 2: What's next? -->
         <div id="helpTextNextStepView" class="hidden">
             <h3 class="text-xl font-semibold mb-4 text-gray-700">Step Added!</h3>
             <p class="text-gray-600 mb-6">What would you like to do next?</p>
             <div class="flex justify-end space-x-3">
-                <button id="finishFromHelpPopup" class="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600">Finish Workflow</button>
+                <button id="finishFromHelpPopup" class="px-4 py-2 text-white rounded-md bg-red-500 hover:bg-red-600">Finish Workflow</button>
                 <button id="addAnotherFromHelpPopup" class="px-4 py-2 text-white rounded-md" style="background: linear-gradient(90deg, rgb(49 135 173) 16%, rgb(27, 181, 142) 74%, rgb(57 180 145) 100%);">Add Next Step</button>
             </div>
         </div>
@@ -367,9 +380,7 @@
         <div id="popupArrow" class="popup-arrow"></div>
         <div class="flex justify-between items-start mb-2">
             <h3 class="text-xl font-semibold text-gray-700">Workflow Step</h3>
-            <button id="endWorkflowRunButton" class="p-1 text-gray-400 hover:text-gray-600">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-            </button>
+            <button id="endWorkflowRunButton" class="text-gray-500 hover:text-gray-800 text-3xl font-light leading-none -mt-1 -mr-2 p-1">&times;</button>
         </div>
         <div id="runStepInfo" class="text-sm text-gray-500 mb-3">Step X of Y</div>
         <div id="runStepHelpText" class="bg-gray-100 p-4 rounded-md mb-4 min-h-[60px]">Help text...</div>
@@ -396,8 +407,11 @@
             </div>
             <div class="flex justify-end space-x-2">
                  <button id="previousStepButton" class="px-3 py-1.5 text-sm bg-gray-400 text-white rounded-md hover:bg-gray-500">Previous</button>
-                <button id="nextStepButton" class="px-3 py-1.5 text-sm text-white rounded-md" style="background: linear-gradient(90deg, rgb(49 135 173) 16%, rgb(27, 181, 142) 74%, rgb(57 180 145) 100%);">Next</button>
+                <button id="nextStepButton" class="px-3 py-1.5 text-sm text-white rounded-md bg-blue-500 hover:bg-blue-600">Next</button>
             </div>
+        </div>
+        <div class="mt-4 pt-4 border-t border-gray-200 text-center text-xs text-gray-400">
+            GuideSpark - Team Columbus
         </div>
     </div>
     
@@ -573,6 +587,7 @@
             // New User Page Elements
             const createUserForm = document.getElementById('createUserForm');
             const userListBody = document.getElementById('userListBody');
+            const addEmployeeButton = document.getElementById('addEmployeeButton');
 
             // Other UI
             const leftMenu = document.getElementById('leftMenu');
@@ -885,18 +900,24 @@
             }
 
             function handleCreateUser(event) {
-                event.preventDefault();
-                const form = event.target;
-                
+                // If the click event was triggered by a script (e.g., from the workflow engine's .click() method)
+                // and a workflow is running, we'll treat it as a demonstration and skip the action.
+                // A real user click will have event.isTrusted = true.
+                if (runningWorkflowData !== null && event && !event.isTrusted) {
+                    console.log("Programmatic click on 'Add Employee' during workflow run. Action skipped.");
+                    return;
+                }
+
+                const form = createUserForm;
                 const empName = form.empName.value.trim();
 
-                // Check if the name is empty and do nothing if it is.
+                // Silently return if the name field is empty, as requested.
                 if (!empName) {
-                    return; 
+                    return;
                 }
 
                 const newUser = {
-                    name: empName, // Use the trimmed name
+                    name: empName,
                     email: form.empEmail.value,
                     phone: form.empPhone.value,
                     empId: form.empId.value,
@@ -906,12 +927,13 @@
                     city: form.empCity.value,
                     gender: form.empGender.value
                 };
-                
+
                 const users = getUsersFromStorage();
                 users.push(newUser);
                 saveUsersToStorage(users);
                 renderUserList();
                 form.reset();
+                showInAppAlert("Employee added successfully!", "success");
             }
 
             // --- Workflow Creation Logic ---
@@ -981,7 +1003,7 @@
 
                 const ignoredSelf = ['body', 'html', '#mainScreen', '#leftMenu'];
                  if (ignoredSelf.some(selector => event.target.matches(selector))) {
-                    return;
+                     return;
                 }
                 
                 event.preventDefault();
@@ -1151,6 +1173,7 @@
                 const TOP_MARGIN = 50;
                 const BOTTOM_MARGIN = 50;
                 const SIDE_MARGIN = 20;
+                const PROJECT_NAME = document.title;
                 const APP_NAME = "GuideSpark";
 
                 const pageWidth = doc.internal.pageSize.getWidth();
@@ -1164,32 +1187,34 @@
                     // Header
                     doc.setFontSize(10);
                     doc.setTextColor(100);
-                    doc.text(APP_NAME, SIDE_MARGIN, TOP_MARGIN / 2, { align: 'left' });
+                    doc.text(PROJECT_NAME, SIDE_MARGIN, TOP_MARGIN / 2, { align: 'left' });
                     
                     // Footer
-                    doc.text(`Page ${pageNum} of ${totalPages}`, pageWidth / 2, pageHeight - (BOTTOM_MARGIN / 2), { align: 'center' });
+                    const footerY = pageHeight - (BOTTOM_MARGIN / 2);
+                    doc.text(`Page ${pageNum} of ${totalPages}`, pageWidth / 2, footerY, { align: 'center' });
+                    doc.setFontSize(8);
+                    doc.setTextColor(150);
+                    doc.text("Team Columbus", pageWidth - SIDE_MARGIN, footerY, { align: 'right' });
                 };
 
                 // --- 1. ADD INTRODUCTION PAGE ---
                 addHeaderFooter(doc, 1, totalPages);
                 doc.setFontSize(26);
                 doc.setTextColor(40);
-                doc.text(APP_NAME, pageWidth / 2, pageHeight / 2 - 60, { align: 'center' });
+                doc.text(PROJECT_NAME, pageWidth / 2, pageHeight / 2 - 80, { align: 'center' });
                 
                 doc.setFontSize(18);
-                doc.text("Workflow Guide", pageWidth / 2, pageHeight / 2 - 30, { align: 'center' });
+                doc.text(workflow.workflowName, pageWidth / 2, pageHeight / 2 - 50, { align: 'center' });
                 
                 doc.setLineWidth(0.5);
-                doc.line(SIDE_MARGIN * 2, pageHeight / 2 - 20, pageWidth - (SIDE_MARGIN * 2), pageHeight / 2 - 20);
-
-                doc.setFontSize(16);
-                doc.text(workflow.workflowName, pageWidth / 2, pageHeight / 2 + 10, { align: 'center' });
+                doc.line(SIDE_MARGIN * 2, pageHeight / 2 - 30, pageWidth - (SIDE_MARGIN * 2), pageHeight / 2 - 30);
 
                 doc.setFontSize(12);
                 doc.setTextColor(150);
+                doc.text("GuideSpark - Team Columbus", pageWidth / 2, pageHeight / 2, { align: 'center' });
+                
                 const createdDate = new Date(workflow.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-                doc.text(`Created on: ${createdDate}`, pageWidth / 2, pageHeight / 2 + 30, { align: 'center' });
-
+                doc.text(`Created on: ${createdDate}`, pageWidth / 2, pageHeight / 2 + 20, { align: 'center' });
 
                 // --- 2. LOOP THROUGH STEPS AND ADD SCREENSHOT PAGES ---
                 for (const [index, step] of sortedSteps.entries()) {
@@ -1432,7 +1457,7 @@
                     showInAppAlert("Could not translate the text at this time.", "error");
                 } finally {
                      moreOptionsButton.innerHTML = `<svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m4 4L8 17M13 17l-5-5m5 5a2.5 2.5 0 110-5 2.5 2.5 0 010 5z" /></svg>`;
-                    moreOptionsPanel.classList.add('hidden');
+                     moreOptionsPanel.classList.add('hidden');
                 }
             }
 
@@ -1440,15 +1465,17 @@
             // --- Gemini API Integration ---
             async function getHelpTextSuggestion(elementPath) {
                 const targetElement = document.querySelector(elementPath);
-                let elementType = 'element';
-                if(targetElement) {
-                    elementType = targetElement.tagName.toLowerCase();
-                    if(targetElement.textContent) {
-                        elementType += ` with text "${targetElement.textContent.trim().substring(0, 30)}"`;
-                    }
-                }
+                let elementDescription = `The user clicked on a ${targetElement.tagName.toLowerCase()} element.`;
+                if(targetElement.id) elementDescription += ` It has an ID of "${targetElement.id}".`;
+                if(targetElement.className) elementDescription += ` It has classes: "${targetElement.className}".`;
+                if(targetElement.textContent) elementDescription += ` The text content is "${targetElement.textContent.trim().substring(0, 50)}".`;
+                if(targetElement.placeholder) elementDescription += ` It has a placeholder text: "${targetElement.placeholder}".`;
 
-                const prompt = `Generate a very short, one-sentence help text for a workflow tutorial. The user needs to interact with a ${elementType}. The help text should be a clear instruction. For example, if it's a "Save" button, suggest something like "Click here to save your changes."`;
+                const prompt = `You are a helpful assistant creating a user-friendly software tutorial for the web application named "${document.title}". The user is creating a workflow named "${currentWorkflowName}". Their current step is to interact with a specific HTML element. 
+                
+                Element Details: ${elementDescription}
+                
+                Based on this context, generate a single, concise, and action-oriented help text sentence to guide the user. For example, for a "Save" button, suggest "Click the Save button to store your changes." For an input field, suggest "Enter the employee's full name here."`;
 
                 suggestHelpTextButton.disabled = true;
                 suggestHelpTextButton.innerHTML = `<svg class="animate-spin h-5 w-5 mr-3 text-gray-700" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Suggesting...`;
@@ -1621,7 +1648,13 @@
                 });
             });
 
-            createUserForm.addEventListener('submit', handleCreateUser);
+            // This listener prevents the form from submitting when 'Enter' is pressed in an input field.
+            createUserForm.addEventListener('submit', (event) => {
+                event.preventDefault();
+            });
+
+            // This listener ensures user creation only happens on an explicit button click.
+            addEmployeeButton.addEventListener('click', handleCreateUser);
             
             userListBody.addEventListener('click', function(event) {
                 const button = event.target.closest('.toggle-contact');
